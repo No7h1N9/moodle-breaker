@@ -2,6 +2,8 @@ import bs4
 
 
 def _contains_answer(string):
+    if not string:
+        return False
     return 'Правильный' in string or 'правильный' in string
 
 
@@ -37,6 +39,8 @@ def parse_plain_text_answers(soup, task_fields):
     correct_answers = {}
     for field in task_fields:
         tag = soup.find_all('input', {'name': field})
+        if len(tag) == 0:
+            continue
         for i in tag[0].parent.find_all('span', {'class': 'feedbackspan'})[0].contents:
             if _contains_answer(i):
                 correct_ans = i.split(': ')[1]
