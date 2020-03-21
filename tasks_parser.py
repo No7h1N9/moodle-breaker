@@ -1,25 +1,36 @@
 import bs4
 
+
 def _contains_answer(string):
     return 'Правильный' in string or 'правильный' in string
 
 
-def parse_plain_text_task(soup, task_fields):
-    task_fields = set([x.get('name')
-                       for x in soup.find_all('input', {'class': 'form-control'})])
-    if None in task_fields:
-        task_fields.remove(None)
-    return task_fields
-
-
-def parse_radio_button_task(soup, task_fields):
-    task_fields = set([x.get('name') for x in soup.find_all('input', {'type': 'radio'})])
-    # Clean rubbish
+def _clean_rubbish(task_fields):
     result = set()
     for item in task_fields:
-        if 'sub' in item:
+        if item is not None and 'sub' in item:
             result.add(item)
     return result
+
+
+def parse_plain_text_task(soup):
+    task_fields = set([x.get('name')
+                       for x in soup.find_all('input', {'class': 'form-control'})])
+    return _clean_rubbish(task_fields)
+
+
+def parse_radio_button_task(soup):
+    task_fields = set([x.get('name') for x in soup.find_all('input', {'type': 'radio'})])
+    # Clean rubbish
+    return _clean_rubbish(task_fields)
+
+
+def parse_picker_task(soup):
+    result = set()
+    for tag in soup.find_all('select'):
+        if 'sub' in tag.get('id', []):
+            result.add(tag['id'])
+    return _clean_rubbish(result)
 
 
 def parse_plain_text_answers(soup, task_fields):
@@ -49,19 +60,20 @@ def parse_radio_button_answers(soup, task_fields):
     return correct_answers
 
 
-def parser_factory(parsers):
-    def parser(response, task_fields: set = frozenset()):
-        soup = bs4.BeautifulSoup(response.content)
-        result = None
-        handlers = parsers.copy()
-        while not result:
-            try:
-                result = handlers.pop()(soup, task_fields)
-            except IndexError:
-                raise NotImplementedError(f'Cannot process task with URL {response.url}')
-        return result
-    return parser
+def parse_task_fields(response):
+    soup = bs4.BeautifulSoup(response.content)
+    result = set()
+    handlers = [parse_plain_text_task, parse_radio_button_task, parse_picker_task]
+    handlers = handlers.copy()
+    while handlers:
+        result = result.union(handlers.pop()(soup))
+    return result
 
 
-parse_task_fields = parser_factory([parse_plain_text_task, parse_radio_button_task])
-parse_answers = parser_factory([parse_plain_text_answers, parse_radio_button_answers])
+def parse_answers(response, task_fields):
+    soup = bs4.BeautifulSoup(response.content)
+    result = dict()
+    handlers = [parse_plain_text_answers, parse_radio_button_answers]
+    while handlers:
+        result.update(handlers.pop()(soup, task_fields))
+    return result
