@@ -2,135 +2,207 @@ import requests
 import bs4
 from urllib.parse import urlparse, parse_qs
 from settings import LOGIN, PASSWORD, HOMEWORK_URLS, MEAN_URLS
+import logging
 
 
-def get_login_token(session):
-    """
-    Нужен токен, без него не авторизует
-    """
-    soup = bs4.BeautifulSoup(session.get('http://moodle.phystech.edu/my/').content)
-    return soup.find('input', {'name': 'logintoken'})['value']
+class LoginManager:
+
+    def __init__(self, login: str, password: str):
+        self.login, self.password = login, password
+        self._session, self._login_token = None, None
+
+    @property
+    def session(self):
+        if not self._session:
+            self._session = requests.Session()
+        return self._session
+
+    @property
+    def login_token(self):
+        if not self._login_token:
+            soup = bs4.BeautifulSoup(self.session.get('http://moodle.phystech.edu/my/').content)
+            self._login_token = soup.find('input', {'name': 'logintoken'})['value']
+        return self._login_token
+
+    def authorize(self):
+        # 2. Авторизация
+        response = self.session.post(
+            'http://moodle.phystech.edu/login/index.php',
+            {'username': self.login, 'password': self.password, 'anchor': '', 'logintoken': self.login_token}
+        )
+        return response
+
+    @property
+    def is_authorized(self):
+        # 1. Проверка авторизации
+        response = self.session.get('http://moodle.phystech.edu/my/')
+        parsed = bs4.BeautifulSoup(response.content)
+        return 'Вход' not in str(parsed.title)
+
+    def __enter__(self):
+        if not self.is_authorized:
+            self.authorize()
+        return self.session
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
 
 
-def authorize(session, login, password):
-    # 2. Авторизация
-    token = get_login_token(session)
-    response = session.post('http://moodle.phystech.edu/login/index.php',
-          {'username': login, 'password': password, 'anchor': '', 'logintoken': token}
-         )
-    return response
+class Task:
+
+    def __init__(self, task_url, session):
+        self.task_url = task_url
+        self.session = session
+        self._task_metadata = None
+        self._task_data = None
+        self.answer_dict = {}
+
+    # NOTE: надо сбрасывать, чтобы начать новую попытку!
+    @property
+    def task_data(self):
+        if not self._task_data:
+            # 4. Стартуем задание
+            # Note: `task_id` === `cmid`
+            response = self.session.post(
+                'http://moodle.phystech.edu/mod/quiz/startattempt.php',
+                {'cmid': self.cmid, 'sesskey': self.sesskey}
+            )
+            # TODO: может быть другой тип задания
+            # Сначала считаем, что
+            task_fields = set([x.get('name')
+                           for x in bs4.BeautifulSoup(response.content).find_all('input', {'class': 'form-control'})])
+            if None in task_fields:
+                task_fields.remove(None)
+            task_url = response.url
+            attempt_number = parse_qs(urlparse(task_url).query)['attempt'][0]
+            self._task_data = {
+                'fields': task_fields,
+                # NOTE: пока не используется
+                'url': task_url,
+                'attempt_number': attempt_number
+            }
+        return self._task_data
+
+    def start_new_attempt(self):
+        self._task_data = None
+        return self.task_data
+
+    @property
+    def task_fields(self):
+        return self.task_data['fields']
+
+    @property
+    def attempt_number(self):
+        return self.task_data['attempt_number']
+
+    @property
+    def cmid(self):
+        return self.task_metadata['cmid']
+
+    @property
+    def sesskey(self):
+        return self.task_metadata['sesskey']
+
+    # Should be cached
+    @property
+    def task_metadata(self):
+        if not self._task_metadata:
+            # First run
+            soup = bs4.BeautifulSoup(self.session.get(self.task_url).content)
+            cmid = soup.find('div', {'class': 'quizstartbuttondiv'}).input.find('input', {'name': 'cmid'})['value']
+            sess_key = soup.find('input', {'name': 'sesskey'})['value']
+            soup.find_all('input', {'class': 'form-control'})
+            self._task_metadata = {'cmid': cmid, 'sesskey': sess_key}
+        return self._task_metadata
+
+    def upload_answers(self):
+        data = {'sesskey': self.sesskey,
+                'attempt': self.attempt_number,
+                # Параметры с мудла, без них не работает
+                'nextpage': -1,
+                'next': 'Закончить попытку...', 'scrollpos': '', 'thispage': 0, 'timeup': 0, 'slots': 1}
+        for elem in self.task_fields:
+            # HACK: some strange field
+            data.update({'{}:1_:flagged'.format(elem.split(':')[0]): 0})
+            data.update({'{}:1_:sequencecheck'.format(elem.split(':')[0]): 1})
+            break
+        if len(self.answer_dict) == 0:
+            # Пустые ответы
+            for key in self.task_fields:
+                data.update({key: ''})
+        else:
+            for key in self.task_fields:
+                # Ищем подходящий ответ. Коварный мудл меняет ключи, но я тоже не дурак!
+                # Короче, тут проблема такая: было "q50228:блабла1" - а становится "q50229:блабла1"
+                # Ключевой момент: блабла1 остается тем же, на этом и сыграем!
+                correct_key = None
+                for key1 in self.answer_dict.keys():
+                    if key1.split(':')[1] == key.split(':')[1]:
+                        correct_key = key1
+                        break
+                data.update({key: self.answer_dict[correct_key]})
+
+        response = self.session.post(
+            'http://moodle.phystech.edu/mod/quiz/processattempt.php?cmid={}'.format(self.cmid),
+            data
+        )
+        return response
+
+    def finish_attempt(self):
+        response = self.session.post(
+            'http://moodle.phystech.edu/mod/quiz/processattempt.php',
+            {'attempt': self.attempt_number, 'finishattempt': 1,
+             'cmid': self.cmid, 'sesskey': self.sesskey}
+        )
+        return response
+
+    def get_answers(self):
+        response = self.session.get(
+            'http://moodle.phystech.edu/mod/quiz/review.php?attempt={}&cmid={}'
+                .format(self.attempt_number, self.cmid)
+        )
+        soup = bs4.BeautifulSoup(response.content)
+        correct_answers = {}
+        for field in self.task_fields:
+            tag = soup.find_all('input', {'name': field})
+            for i in tag[0].parent.find_all('span', {'class': 'feedbackspan'})[0].contents:
+                if 'ильный' in i:
+                    correct_ans = i.split(': ')[1]
+                    correct_answers.update({field: correct_ans})
+        self.answer_dict = correct_answers
+        return correct_answers
 
 
-def is_authorized(session):
-    # 1. Проверка авторизации
-    response = session.get('http://moodle.phystech.edu/my/')
-    parsed = bs4.BeautifulSoup(response.content)
-    return 'Вход' not in str(parsed.title)
+def cheat_on(url):
+    with LoginManager(login=LOGIN, password=PASSWORD) as session:
+        task = Task(task_url=url, session=session)
+        task.start_new_attempt()
+        task.upload_answers()
+        task.finish_attempt()
+        task.get_answers()
+        task.start_new_attempt()
+        task.upload_answers()
+        task.finish_attempt()
 
 
-def start_task(session, task_metadata):
-    # 4. Стартуем задание
-    # Note: `task_id` === `cmid`
-    response = session.post(
-        'http://moodle.phystech.edu/mod/quiz/startattempt.php',
-        task_metadata
-    )
-    task_fields = set([x.get('name')
-                   for x in bs4.BeautifulSoup(response.content).find_all('input', {'class': 'form-control'})])
-    if None in task_fields:
-        task_fields.remove(None)
-    task_url = response.url
-    return task_fields, task_url, response
+def get_logger():
+    logger = logging.getLogger("exampleApp")
+    logger.setLevel(logging.INFO)
 
+    # create the logging file handler
+    fh = logging.FileHandler("new_snake.log")
 
-def load_task(session, task_url):
-    # 3. Метаданные задания
-    soup = bs4.BeautifulSoup(session.get(task_url).content)
-    cmid = soup.find('div', {'class': 'quizstartbuttondiv'}).input.find('input', {'name': 'cmid'})['value']
-    sess_key = soup.find('input', {'name': 'sesskey'})['value']
-    soup.find_all('input', {'class': 'form-control'})
-    return {'cmid': cmid, 'sesskey': sess_key}
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
 
-
-def upload_answers(session, answer_dict: dict, task_metadata, task_fields, attempt_number):
-    data = {'sesskey': task_metadata['sesskey'], 'nextpage': -1, 'attempt': attempt_number,
-            'next': 'Закончить попытку...', 'scrollpos': '', 'thispage': 0, 'timeup': 0, 'slots': 1}
-    for elem in task_fields:
-        # HACK: some strange field
-        data.update({'{}:1_:flagged'.format(elem.split(':')[0]): 0})
-        data.update({'{}:1_:sequencecheck'.format(elem.split(':')[0]): 1})
-        break
-    if len(answer_dict) == 0:
-        # Пустые ответы
-        for key in task_fields:
-            data.update({key: ''})
-    else:
-        for key in task_fields:
-            # Ищем подходящий ответ. Коварный мудл меняет ключи, но я тоже не дурак!
-            # Короче, тут проблема такая: было "q50228:блабла1" - а становится "q50229:блабла1"
-            # Ключевой момент: блабла1 остается тем же, на этом и сыграем!
-            correct_key = None
-            for key1 in answer_dict.keys():
-                if key1.split(':')[1] == key.split(':')[1]:
-                    correct_key = key1
-                    break
-            data.update({key: answer_dict[correct_key]})
-
-    response = session.post(
-        'http://moodle.phystech.edu/mod/quiz/processattempt.php?cmid={}'.format(task_metadata['cmid']),
-        data
-    )
-    return response
-
-
-def finish_attempt(session, attempt_number, task_metadata):
-    response = session.post(
-        'http://moodle.phystech.edu/mod/quiz/processattempt.php',
-        {'attempt': attempt_number, 'finishattempt': 1,
-         'cmid': task_metadata['cmid'], 'sesskey': task_metadata['sesskey']}
-    )
-    return response
-
-
-def get_answers(session, task_fields, attempt_number, task_metadata):
-    response = session.get(
-        'http://moodle.phystech.edu/mod/quiz/review.php?attempt={}&cmid={}'
-            .format(attempt_number, task_metadata['cmid'])
-    )
-    soup = bs4.BeautifulSoup(response.content)
-    result = {}
-    for field in task_fields:
-        tag = soup.find_all('input', {'name': field})
-        for i in tag[0].parent.find_all('span', {'class': 'feedbackspan'})[0].contents:
-            if 'ильный' in i:
-                correct_ans = i.split(': ')[1]
-                result.update({field: correct_ans})
-    return result
-
-
-def cheat_on(s, url):
-    task_metadata = load_task(s, url)
-    task_fields, task_url, response = start_task(s, task_metadata)
-    attempt_number = parse_qs(urlparse(task_url).query)['attempt'][0]
-    upload_answers(s, answer_dict={}, task_metadata=task_metadata, task_fields=task_fields,
-                   attempt_number=attempt_number)
-    finish_attempt(s, attempt_number=attempt_number, task_metadata=task_metadata)
-    answers = get_answers(s, task_fields=task_fields, attempt_number=attempt_number, task_metadata=task_metadata)
-    # А теперь, девочки и мальчики, пора заполнять правильные ответы
-    task_fields, task_url, response = start_task(s, task_metadata)
-    attempt_number = parse_qs(urlparse(task_url).query)['attempt'][0]
-    upload_answers(s, answer_dict=answers, task_metadata=task_metadata, task_fields=task_fields,
-                   attempt_number=attempt_number)
-    finish_attempt(s, attempt_number=attempt_number, task_metadata=task_metadata)
+    # add handler to logger object
+    logger.addHandler(fh)
+    return logger
 
 
 if __name__ == '__main__':
-    s = requests.Session()
-    if not is_authorized(s):
-        authorize(s, login=LOGIN, password=PASSWORD)
-
     for url in HOMEWORK_URLS:
-        cheat_on(s, url)
+        cheat_on(url)
     for url in MEAN_URLS:
         for _ in range(40):
-            cheat_on(s, url)
+            cheat_on(url)
