@@ -184,7 +184,7 @@ class Task:
         return correct_answers
 
 
-def cheat_on(url):
+def cheat_on(url, multiple=1):
     with LoginManager(login=LOGIN, password=PASSWORD) as session:
         task = Task(task_url=url, session=session, loglevel=logging.DEBUG)
         task.logger.info(f'starting task {task.task_url}')
@@ -192,14 +192,14 @@ def cheat_on(url):
         task.upload_answers()
         task.finish_attempt()
         task.get_answers()
-        task.start_new_attempt()
-        task.upload_answers()
-        task.finish_attempt()
+        for _ in range(multiple):
+            task.start_new_attempt()
+            task.upload_answers()
+            task.finish_attempt()
 
 
 if __name__ == '__main__':
     for url in HOMEWORK_URLS:
         cheat_on(url)
     for url in MEAN_URLS:
-        for _ in range(40):
-            cheat_on(url)
+        cheat_on(url, multiple=500)
