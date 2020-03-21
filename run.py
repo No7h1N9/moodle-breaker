@@ -50,12 +50,26 @@ class LoginManager:
 
 class Task:
 
-    def __init__(self, task_url, session):
+    def __init__(self, task_url, session, loglevel=logging.INFO):
         self.task_url = task_url
         self.session = session
-        self._task_metadata = None
+        self.logger = self.setup_logger(loglevel)
+        self._task_metadata, self._logger = None, None
         self._task_data = None
         self.answer_dict = {}
+
+    @staticmethod
+    def setup_logger(loglevel):
+        logger = logging.getLogger("main")
+        logger.setLevel(loglevel)
+        # create the logging file handler
+        fh = logging.FileHandler("main.log")
+
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
+        # add handler to logger object
+        logger.addHandler(fh)
+        return logger
 
     # NOTE: надо сбрасывать, чтобы начать новую попытку!
     @property
@@ -73,8 +87,11 @@ class Task:
                            for x in bs4.BeautifulSoup(response.content).find_all('input', {'class': 'form-control'})])
             if None in task_fields:
                 task_fields.remove(None)
+            self.logger.debug(f'task_fields: {task_fields}')
             task_url = response.url
+            self.logger.debug(f'task_url: {task_url}')
             attempt_number = parse_qs(urlparse(task_url).query)['attempt'][0]
+            self.logger.debug(f'attempt_number: {attempt_number}')
             self._task_data = {
                 'fields': task_fields,
                 # NOTE: пока не используется
@@ -128,6 +145,7 @@ class Task:
             break
         if len(self.answer_dict) == 0:
             # Пустые ответы
+            self.logger.info('Empty answers dict, sending empty data')
             for key in self.task_fields:
                 data.update({key: ''})
         else:
@@ -138,6 +156,7 @@ class Task:
                 correct_key = None
                 for key1 in self.answer_dict.keys():
                     if key1.split(':')[1] == key.split(':')[1]:
+                        self.logger.debug(f'mapping keys: {key1} -> {key}')
                         correct_key = key1
                         break
                 data.update({key: self.answer_dict[correct_key]})
@@ -175,7 +194,8 @@ class Task:
 
 def cheat_on(url):
     with LoginManager(login=LOGIN, password=PASSWORD) as session:
-        task = Task(task_url=url, session=session)
+        task = Task(task_url=url, session=session, loglevel=logging.DEBUG)
+        task.logger.info(f'starting task {task.task_url}')
         task.start_new_attempt()
         task.upload_answers()
         task.finish_attempt()
@@ -183,21 +203,6 @@ def cheat_on(url):
         task.start_new_attempt()
         task.upload_answers()
         task.finish_attempt()
-
-
-def get_logger():
-    logger = logging.getLogger("exampleApp")
-    logger.setLevel(logging.INFO)
-
-    # create the logging file handler
-    fh = logging.FileHandler("new_snake.log")
-
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-
-    # add handler to logger object
-    logger.addHandler(fh)
-    return logger
 
 
 if __name__ == '__main__':
