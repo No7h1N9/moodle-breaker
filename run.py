@@ -123,17 +123,21 @@ class Task:
         soup = bs4.BeautifulSoup(response.content, features='lxml')
         all_attempts = soup.find_all('tr')[1:]  # Первый - это хидер таблицы
 
-        # Надо определить, где находится твоя оценка
-        total_cols = all_attempts[0].find_all('td', {'class', 'lastcol'})[0]['class']
-        ide = [item for i, item in enumerate(total_cols) if re.search(r'c\d', item)]
-        if ide:
-            total_cols = int(ide[0][1:])
+        best_attempt = None
+        try:
+            # Надо определить, где находится твоя оценка
+            total_cols = all_attempts[0].find_all('td', {'class', 'lastcol'})[0]['class']
+            ide = [item for i, item in enumerate(total_cols) if re.search(r'c\d', item)]
+            if ide:
+                total_cols = int(ide[0][1:])
 
-        all_attempts.sort(key=lambda tag: to_float(
-            # В 'c3' содержится твоя оценка
-            tag.find('td', {'class': f'c{total_cols - 1}'}).text.replace(',', '.')
-        ))
-        best_attempt = all_attempts.pop()
+            all_attempts.sort(key=lambda tag: to_float(
+                # В 'c3' содержится твоя оценка
+                tag.find('td', {'class': f'c{total_cols - 1}'}).text.replace(',', '.')
+            ))
+            best_attempt = all_attempts.pop()
+        except IndexError:
+            logger.info('could not parse best own attempt. Proceeding as the first run...')
         best_url = None
         if best_attempt:
             best_url = best_attempt.find('td', {'class': f'c{total_cols}'}).next['href']
