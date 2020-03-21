@@ -3,6 +3,7 @@ import bs4
 from urllib.parse import urlparse, parse_qs
 from settings import LOGIN, PASSWORD, HOMEWORK_URLS, MEAN_URLS
 import logging
+from tasks_parser import parse_task_fields, parse_answers
 
 
 class LoginManager:
@@ -71,6 +72,7 @@ class Task:
         logger.addHandler(fh)
         return logger
 
+
     # NOTE: надо сбрасывать, чтобы начать новую попытку!
     @property
     def task_data(self):
@@ -83,10 +85,7 @@ class Task:
             )
             # TODO: может быть другой тип задания
             # Сначала считаем, что
-            task_fields = set([x.get('name')
-                           for x in bs4.BeautifulSoup(response.content).find_all('input', {'class': 'form-control'})])
-            if None in task_fields:
-                task_fields.remove(None)
+            task_fields = parse_task_fields(response)
             self.logger.debug(f'task_fields: {task_fields}')
             task_url = response.url
             self.logger.debug(f'task_url: {task_url}')
@@ -180,14 +179,7 @@ class Task:
             'http://moodle.phystech.edu/mod/quiz/review.php?attempt={}&cmid={}'
                 .format(self.attempt_number, self.cmid)
         )
-        soup = bs4.BeautifulSoup(response.content)
-        correct_answers = {}
-        for field in self.task_fields:
-            tag = soup.find_all('input', {'name': field})
-            for i in tag[0].parent.find_all('span', {'class': 'feedbackspan'})[0].contents:
-                if 'ильный' in i:
-                    correct_ans = i.split(': ')[1]
-                    correct_answers.update({field: correct_ans})
+        correct_answers = parse_answers(response, self.task_fields)
         self.answer_dict = correct_answers
         return correct_answers
 
