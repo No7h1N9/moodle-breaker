@@ -224,7 +224,12 @@ def cheat_on(url, multiple=1):
         task = Task(task_url=url, session=session)
         logger.info(f'starting task {task.task_url}')
         for _ in range(multiple):
-            task.break_it()
+            try:
+                task.break_it()
+            except Exception as e:
+                logger.debug(f'cookies: {session.cookies}')
+                logger.error(e, stack_info=True)
+                raise e
 
 
 if __name__ == '__main__':
