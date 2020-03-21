@@ -1,7 +1,7 @@
 import requests
 import bs4
 from urllib.parse import urlparse, parse_qs
-from settings import LOGIN, PASSWORD, HOMEWORK_URLS, MEAN_URLS
+from settings import LOGIN, PASSWORD, HOMEWORK_URLS, MEAN_URLS, MEAN_ATTEMPTS
 import logging
 from tasks_parser import parse_task_fields, parse_answers
 
@@ -202,4 +202,4 @@ if __name__ == '__main__':
     for url in HOMEWORK_URLS:
         cheat_on(url)
     for url in MEAN_URLS:
-        cheat_on(url, multiple=500)
+        cheat_on(url, multiple=MEAN_ATTEMPTS)
