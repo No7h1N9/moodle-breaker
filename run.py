@@ -43,9 +43,11 @@ class TaskMetadata:
         if not self._task_metadata:
             # First run
             soup = bs4.BeautifulSoup(self.session.get(self.task_url).content)
-            cmid = soup.find('div', {'class': 'quizstartbuttondiv'}).input.find('input', {'name': 'cmid'})['value']
-            sess_key = soup.find('input', {'name': 'sesskey'})['value']
-            soup.find_all('input', {'class': 'form-control'})
+            for tag in soup.find_all('input'):
+                if tag.get('name', '') == 'cmid':
+                    cmid = tag['value']
+                if tag.get('name', '') == 'sesskey':
+                    sess_key = tag['value']
             self._task_metadata = {'cmid': cmid, 'sesskey': sess_key}
         return self._task_metadata
 
