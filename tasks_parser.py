@@ -37,14 +37,13 @@ def parse_picker_task(soup):
 
 def parse_plain_text_answers(soup, task_fields):
     correct_answers = {}
-    for field in task_fields:
-        tag = soup.find_all('input', {'name': field})
-        if len(tag) == 0:
+    for tag in soup.find_all('input'):
+        if 'sub' not in tag.get('name', ''):
             continue
-        for i in tag[0].parent.find_all('span', {'class': 'feedbackspan'})[0].contents:
+        for i in tag.parent.find_all('span', {'class': 'feedbackspan'})[0].contents:
             if _contains_answer(i):
                 correct_ans = i.split(': ')[1]
-                correct_answers.update({field: correct_ans})
+                correct_answers.update({tag['name']: correct_ans})
     return correct_answers
 
 
@@ -66,6 +65,10 @@ def parse_radio_button_answers(soup, task_fields):
 
 def parse_picker_answers(soup, task_fields):
     correct_answers = {}
+    task_fields = set()
+    for tmp in soup.find_all('select'):
+        if 'sub' in tmp.get('name', ''):
+            task_fields.add(tmp['name'])
     for field in task_fields:
         tag = soup.find_all('select', {'name': field})
         if len(tag) == 0:

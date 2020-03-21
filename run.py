@@ -4,6 +4,58 @@ from urllib.parse import urlparse, parse_qs
 from settings import LOGIN, PASSWORD, HOMEWORK_URLS, MEAN_URLS, MEAN_ATTEMPTS
 import logging
 from tasks_parser import parse_task_fields, parse_answers
+import re
+
+
+def to_float(s):
+    try:
+        return float(s)
+    except ValueError:
+        return -1
+
+
+def setup_logger(loglevel):
+    logger = logging.getLogger("main")
+    logger.setLevel(loglevel)
+    # create the logging file handler
+    fh = logging.FileHandler("main.log")
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    # add handler to logger object
+    logger.addHandler(fh)
+    return logger
+
+
+logger = setup_logger(logging.DEBUG)
+
+
+class TaskMetadata:
+
+    def __init__(self, session, task_url):
+        self.task_url = task_url
+        self.session = session
+        self._task_metadata = None
+
+    # Should be cached
+    @property
+    def task_metadata(self):
+        if not self._task_metadata:
+            # First run
+            soup = bs4.BeautifulSoup(self.session.get(self.task_url).content)
+            cmid = soup.find('div', {'class': 'quizstartbuttondiv'}).input.find('input', {'name': 'cmid'})['value']
+            sess_key = soup.find('input', {'name': 'sesskey'})['value']
+            soup.find_all('input', {'class': 'form-control'})
+            self._task_metadata = {'cmid': cmid, 'sesskey': sess_key}
+        return self._task_metadata
+
+    @property
+    def cmid(self):
+        return self.task_metadata['cmid']
+
+    @property
+    def sesskey(self):
+        return self.task_metadata['sesskey']
 
 
 class LoginManager:
@@ -51,89 +103,75 @@ class LoginManager:
 
 class Task:
 
-    def __init__(self, task_url, session, loglevel=logging.INFO):
+    def __init__(self, task_url, session):
         self.task_url = task_url
         self.session = session
-        self.logger = self.setup_logger(loglevel)
-        self._task_metadata, self._logger = None, None
+        self.task_metadata = TaskMetadata(session=session, task_url=task_url)
+        self.task_fields = None
         self._task_data = None
+        self.best_own_url = self.find_best_own_url()
         self.answer_dict = {}
+        if self.best_own_url:
+            logger.info('found own attempt: {}'.format(self.best_own_url))
 
-    @staticmethod
-    def setup_logger(loglevel):
-        logger = logging.getLogger("main")
-        logger.setLevel(loglevel)
-        # create the logging file handler
-        fh = logging.FileHandler("main.log")
+    def find_best_own_url(self):
+        response = self.session.get(
+            'http://moodle.phystech.edu/mod/quiz/view.php?id={}'.format(self.task_metadata.cmid)
+        )
+        soup = bs4.BeautifulSoup(response.content)
+        all_attempts = soup.find_all('tr')[1:]  # Первый - это хидер таблицы
 
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        fh.setFormatter(formatter)
-        # add handler to logger object
-        logger.addHandler(fh)
-        return logger
+        # Надо определить, где находится твоя оценка
+        total_cols = all_attempts[0].find_all('td', {'class', 'lastcol'})[0]['class']
+        ide = [item for i, item in enumerate(total_cols) if re.search(r'c\d', item)]
+        if ide:
+            total_cols = int(ide[0][1:])
 
+        all_attempts.sort(key=lambda tag: to_float(
+            # В 'c3' содержится твоя оценка
+            tag.find('td', {'class': f'c{total_cols - 1}'}).text.replace(',', '.')
+        ))
+        best_attempt = all_attempts.pop()
+        best_url = None
+        if best_attempt:
+            best_url = best_attempt.find('td', {'class': f'c{total_cols}'}).next['href']
+        return best_url
 
-    # NOTE: надо сбрасывать, чтобы начать новую попытку!
-    @property
-    def task_data(self):
-        if not self._task_data:
-            # 4. Стартуем задание
-            # Note: `task_id` === `cmid`
-            response = self.session.post(
-                'http://moodle.phystech.edu/mod/quiz/startattempt.php',
-                {'cmid': self.cmid, 'sesskey': self.sesskey}
+    def break_it(self):
+        if not self.best_own_url:
+            # Здесь мы чисто берем task_fields
+            self.task_fields, _ = self.parse_task_fields(
+                self.start_new_attempt()
             )
-            # TODO: может быть другой тип задания
-            # Сначала считаем, что
-            task_fields = parse_task_fields(response)
-            self.logger.debug(f'task_fields: {task_fields}')
-            task_url = response.url
-            self.logger.debug(f'task_url: {task_url}')
-            attempt_number = parse_qs(urlparse(task_url).query)['attempt'][0]
-            self.logger.debug(f'attempt_number: {attempt_number}')
-            self._task_data = {
-                'fields': task_fields,
-                # NOTE: пока не используется
-                'url': task_url,
-                'attempt_number': attempt_number
-            }
-        return self._task_data
+            self.upload_answers(attempt_number=_)
+            self.finish_attempt(attempt_number=_)
+            # Теперь ссылается на единственную попытку - свою
+            self.best_own_url = self.find_best_own_url()
+        self.task_fields, attempt = self.parse_task_fields(self.start_new_attempt())
+        self.get_answers(self.best_own_url)
+        self.upload_answers(attempt_number=attempt)
+        self.finish_attempt(attempt_number=attempt)
 
     def start_new_attempt(self):
-        self._task_data = None
-        return self.task_data
+        response = self.session.post(
+            'http://moodle.phystech.edu/mod/quiz/startattempt.php',
+            {'cmid': self.task_metadata.cmid, 'sesskey': self.task_metadata.sesskey}
+        )
+        return response
 
-    @property
-    def task_fields(self):
-        return self.task_data['fields']
+    @staticmethod
+    def parse_task_fields(response):
+        task_fields = parse_task_fields(response)
+        logger.debug(f'task_fields: {task_fields}')
+        task_url = response.url
+        logger.debug(f'task_url: {task_url}')
+        attempt_number = parse_qs(urlparse(task_url).query)['attempt'][0]
+        logger.debug(f'attempt_number: {attempt_number}')
+        return task_fields, attempt_number
 
-    @property
-    def attempt_number(self):
-        return self.task_data['attempt_number']
-
-    @property
-    def cmid(self):
-        return self.task_metadata['cmid']
-
-    @property
-    def sesskey(self):
-        return self.task_metadata['sesskey']
-
-    # Should be cached
-    @property
-    def task_metadata(self):
-        if not self._task_metadata:
-            # First run
-            soup = bs4.BeautifulSoup(self.session.get(self.task_url).content)
-            cmid = soup.find('div', {'class': 'quizstartbuttondiv'}).input.find('input', {'name': 'cmid'})['value']
-            sess_key = soup.find('input', {'name': 'sesskey'})['value']
-            soup.find_all('input', {'class': 'form-control'})
-            self._task_metadata = {'cmid': cmid, 'sesskey': sess_key}
-        return self._task_metadata
-
-    def upload_answers(self):
-        data = {'sesskey': self.sesskey,
-                'attempt': self.attempt_number,
+    def upload_answers(self, attempt_number):
+        data = {'sesskey': self.task_metadata.sesskey,
+                'attempt': attempt_number,
                 # Параметры с мудла, без них не работает
                 'nextpage': -1,
                 'next': 'Закончить попытку...', 'scrollpos': '', 'thispage': 0, 'timeup': 0, 'slots': 1}
@@ -144,7 +182,7 @@ class Task:
             break
         if len(self.answer_dict) == 0:
             # Пустые ответы
-            self.logger.info('Empty answers dict, sending empty data')
+            logger.info('Empty answers dict, sending empty data')
             for key in self.task_fields:
                 data.update({key: ''})
         else:
@@ -155,30 +193,27 @@ class Task:
                 correct_key = None
                 for key1 in self.answer_dict.keys():
                     if key1.split(':')[1] == key.split(':')[1]:
-                        self.logger.debug(f'mapping keys: {key1} -> {key}')
+                        logger.debug(f'mapping keys: {key1} -> {key}')
                         correct_key = key1
                         break
                 data.update({key: self.answer_dict[correct_key]})
 
         response = self.session.post(
-            'http://moodle.phystech.edu/mod/quiz/processattempt.php?cmid={}'.format(self.cmid),
+            'http://moodle.phystech.edu/mod/quiz/processattempt.php?cmid={}'.format(self.task_metadata.cmid),
             data
         )
         return response
 
-    def finish_attempt(self):
+    def finish_attempt(self, attempt_number):
         response = self.session.post(
             'http://moodle.phystech.edu/mod/quiz/processattempt.php',
-            {'attempt': self.attempt_number, 'finishattempt': 1,
-             'cmid': self.cmid, 'sesskey': self.sesskey}
+            {'attempt': attempt_number, 'finishattempt': 1,
+             'cmid': self.task_metadata.cmid, 'sesskey': self.task_metadata.sesskey}
         )
         return response
 
-    def get_answers(self):
-        response = self.session.get(
-            'http://moodle.phystech.edu/mod/quiz/review.php?attempt={}&cmid={}'
-                .format(self.attempt_number, self.cmid)
-        )
+    def get_answers(self, attempt_url):
+        response = self.session.get(attempt_url)
         correct_answers = parse_answers(response, self.task_fields)
         self.answer_dict = correct_answers
         return correct_answers
@@ -186,16 +221,10 @@ class Task:
 
 def cheat_on(url, multiple=1):
     with LoginManager(login=LOGIN, password=PASSWORD) as session:
-        task = Task(task_url=url, session=session, loglevel=logging.DEBUG)
-        task.logger.info(f'starting task {task.task_url}')
-        task.start_new_attempt()
-        task.upload_answers()
-        task.finish_attempt()
-        task.get_answers()
+        task = Task(task_url=url, session=session)
+        logger.info(f'starting task {task.task_url}')
         for _ in range(multiple):
-            task.start_new_attempt()
-            task.upload_answers()
-            task.finish_attempt()
+            task.break_it()
 
 
 if __name__ == '__main__':
