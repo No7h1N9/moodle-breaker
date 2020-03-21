@@ -40,7 +40,10 @@ def parse_plain_text_answers(soup, task_fields):
     for tag in soup.find_all('input'):
         if 'sub' not in tag.get('name', ''):
             continue
-        for i in tag.parent.find_all('span', {'class': 'feedbackspan'})[0].contents:
+        to_iterate = tag.parent.find_all('span', {'class': 'feedbackspan'})
+        if not to_iterate:
+            continue
+        for i in to_iterate[0].contents:
             if _contains_answer(i):
                 correct_ans = i.split(': ')[1]
                 correct_answers.update({tag['name']: correct_ans})
