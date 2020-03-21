@@ -89,7 +89,7 @@ def parse_picker_answers(soup, task_fields):
 
 
 def parse_task_fields(response):
-    soup = bs4.BeautifulSoup(response.content)
+    soup = bs4.BeautifulSoup(response.content, features='lxml')
     result = set()
     handlers = [parse_plain_text_task, parse_radio_button_task, parse_picker_task]
     handlers = handlers.copy()
@@ -99,7 +99,7 @@ def parse_task_fields(response):
 
 
 def parse_answers(response, task_fields):
-    soup = bs4.BeautifulSoup(response.content)
+    soup = bs4.BeautifulSoup(response.content, features='lxml')
     result = dict()
     handlers = [parse_plain_text_answers, parse_radio_button_answers, parse_picker_answers]
     while handlers:

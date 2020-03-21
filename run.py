@@ -42,7 +42,7 @@ class TaskMetadata:
     def task_metadata(self):
         if not self._task_metadata:
             # First run
-            soup = bs4.BeautifulSoup(self.session.get(self.task_url).content)
+            soup = bs4.BeautifulSoup(self.session.get(self.task_url).content, features='lxml')
             for tag in soup.find_all('input'):
                 if tag.get('name', '') == 'cmid':
                     cmid = tag['value']
@@ -75,7 +75,7 @@ class LoginManager:
     @property
     def login_token(self):
         if not self._login_token:
-            soup = bs4.BeautifulSoup(self.session.get('http://moodle.phystech.edu/my/').content)
+            soup = bs4.BeautifulSoup(self.session.get('http://moodle.phystech.edu/my/').content, features='lxml')
             self._login_token = soup.find('input', {'name': 'logintoken'})['value']
         return self._login_token
 
@@ -91,7 +91,7 @@ class LoginManager:
     def is_authorized(self):
         # 1. Проверка авторизации
         response = self.session.get('http://moodle.phystech.edu/my/')
-        parsed = bs4.BeautifulSoup(response.content)
+        parsed = bs4.BeautifulSoup(response.content, features='lxml')
         return 'Вход' not in str(parsed.title)
 
     def __enter__(self):
@@ -120,7 +120,7 @@ class Task:
         response = self.session.get(
             'http://moodle.phystech.edu/mod/quiz/view.php?id={}'.format(self.task_metadata.cmid)
         )
-        soup = bs4.BeautifulSoup(response.content)
+        soup = bs4.BeautifulSoup(response.content, features='lxml')
         all_attempts = soup.find_all('tr')[1:]  # Первый - это хидер таблицы
 
         # Надо определить, где находится твоя оценка
