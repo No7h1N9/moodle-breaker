@@ -64,6 +64,24 @@ def parse_radio_button_answers(soup, task_fields):
     return correct_answers
 
 
+def parse_picker_answers(soup, task_fields):
+    correct_answers = {}
+    for field in task_fields:
+        tag = soup.find_all('select', {'name': field})
+        if len(tag) == 0:
+            continue
+        for i in tag[0].parent.find_all():
+            for content in i.contents:
+                if _contains_answer(content):
+                    correct_ans = content.split(': ')[1]
+                    # Ищем номер позиции пикера, соответствующий ответу. Опять тяжко
+                    for option in soup.find_all('select', {'name': field})[0].find_all('option'):
+                        if option.text == correct_ans:
+                            correct_ans = option['value']
+                    correct_answers.update({field: correct_ans})
+    return correct_answers
+
+
 def parse_task_fields(response):
     soup = bs4.BeautifulSoup(response.content)
     result = set()
@@ -77,7 +95,7 @@ def parse_task_fields(response):
 def parse_answers(response, task_fields):
     soup = bs4.BeautifulSoup(response.content)
     result = dict()
-    handlers = [parse_plain_text_answers, parse_radio_button_answers]
+    handlers = [parse_plain_text_answers, parse_radio_button_answers, parse_picker_answers]
     while handlers:
         result.update(handlers.pop()(soup, task_fields))
     return result
