@@ -136,11 +136,17 @@ class Task:
                 tag.find('td', {'class': f'c{total_cols - 1}'}).text.replace(',', '.')
             ))
             best_attempt = all_attempts.pop()
+            # BUG: best_attempt может указывать неоконченную попытку, если та единственна
         except IndexError:
             logger.info('could not parse best own attempt. Proceeding as the first run...')
         best_url = None
         if best_attempt:
-            best_url = best_attempt.find('td', {'class': f'c{total_cols}'}).next['href']
+            try:
+                best_url = best_attempt.find('td', {'class': f'c{total_cols}'}).next['href']
+            except TypeError:
+                # Если есть незавершенная попытка, он не сможет найти 'href' у следующего тега
+                # Поэтому мы просто пометим best_attempt в None
+                logger.info('first own attempt and not finished. `best_url` is set to None')
         return best_url
 
     def break_it(self):
