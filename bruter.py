@@ -21,19 +21,15 @@ def sequences_with_k_incorrect(k, correct_sequence, answer_options: tuple = (0, 
             yield ''.join(tmp)
 
 
+def all_possible_incorrect_attempts(correct_sequence, answer_options: tuple = (0, 1)):
+    if not correct_sequence:
+        return {}
+    result = {}
+    for k in range(1, len(correct_sequence)):
+        result[k] = list(sequences_with_k_incorrect(k, correct_sequence, answer_options=answer_options))
+    return result
+
+
 if __name__ == '__main__':
     CORRECT_SEQUENCE = '0001010111'
     num = 3
-    for combo in list(sequences_with_k_incorrect(num, CORRECT_SEQUENCE)):
-        print(combo)
-        print(CORRECT_SEQUENCE)
-        a = 0
-        for i in range(len(combo)):
-            if combo[i] != CORRECT_SEQUENCE[i]:
-                a += 1
-                print('|', end='')
-            else:
-                print(' ', end='')
-        assert a == num
-        print()
-        print()
