@@ -1,18 +1,19 @@
 from itertools import combinations, product
 
 
-def total_list_differences(li1: list, li2: list):
-    if len(li1) != len(li2):
-        return -1
-    return sum([li1[i] != li2[i] for i in range(len(li1))])
+def total_list_differences(li1: tuple, li2: tuple) -> int:
+    result = 0
+    for i in range(len(li1)):
+        if li1[i] != li2[i]:
+            result += 1
+    return result
 
 
-def sequences_with_k_incorrect(k, correct_sequence, answer_options: tuple = (0, 1)):
+def sequences_with_k_incorrect(k, correct_sequence, answer_options: tuple = ('0', '1')):
     for positions_to_change in combinations(range(len(correct_sequence)), k):
         for replacement_for_position in product(*[answer_options]*len(positions_to_change)):
-            replacement_for_position = [str(x) for x in replacement_for_position]
             if total_list_differences(
-                    [correct_sequence[position] for position in positions_to_change],
+                    tuple([correct_sequence[position] for position in positions_to_change]),
                     replacement_for_position) != k:
                 continue
             tmp = list(correct_sequence)[:]
@@ -21,7 +22,7 @@ def sequences_with_k_incorrect(k, correct_sequence, answer_options: tuple = (0, 
             yield ''.join(tmp)
 
 
-def all_possible_incorrect_attempts(correct_sequence, answer_options: tuple = (0, 1)):
+def all_possible_incorrect_attempts(correct_sequence, answer_options: tuple = ('0', '1')):
     if not correct_sequence:
         return {}
     result = {}
@@ -30,6 +31,42 @@ def all_possible_incorrect_attempts(correct_sequence, answer_options: tuple = (0
     return result
 
 
+def brute(known_attempts, total_questions, answer_options: tuple = ('0', '1'), candidates: list = None):
+    results = []
+    if not candidates:
+        candidates = product(*[answer_options]*total_questions)
+    for candidate in candidates:
+        candidate = ''.join(candidate)
+        to_check = all_possible_incorrect_attempts(candidate, answer_options=answer_options)
+        correct_assumption = True
+        for attempt_seq, errors_number in known_attempts:
+            if attempt_seq not in to_check[errors_number]:
+                correct_assumption = False
+                break
+        if correct_assumption:
+            results.append(candidate)
+    return results
+
+
 if __name__ == '__main__':
     CORRECT_SEQUENCE = '0001010111'
     num = 3
+    '''
+    print(brute([
+        ('0001000110', 2),
+        ('0101010101', 2),
+        ('0111010111', 2),
+        ('0101010111', 1),
+        ('0001000111', 1),
+        ], 10, candidates=['0001010111', '0101000111', '0101010110']
+    ))
+    '''
+    corr = '00000'
+    print(brute([
+        ('00011', 2),
+        ('00110', 2),
+        ('01100', 2),
+        ('11000', 2),
+        ('01010', 2),
+    ], 5))
+    #'''
