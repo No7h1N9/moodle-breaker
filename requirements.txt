@@ -1,2 +1,10 @@
 requests
 bs4
+flask
+flask_sqlalchemy
+flask_script
+flask_migrate
+python-dotenv
+sqlalchemy
+psycopg2-binary
+vk
