@@ -2,15 +2,13 @@ from flask import Flask, Blueprint, request, current_app
 from vk_api import VkApi
 import json
 
-from settings import Config
-
 
 api = Blueprint('api', __name__)
 
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object('settings.Config')
     app.vk_api = VkApi(access_token=app.config['ACCESS_TOKEN'])
     app.register_blueprint(api)
     return app
