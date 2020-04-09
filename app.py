@@ -23,6 +23,7 @@ def handle_vk_request():
         return current_app.config['CONFIRMATION_TOKEN']
     elif data['type'] == 'message_new':
         incoming_message = data['object']
+        print(incoming_message)
         current_app.vk_api.send_message(incoming_message['user_id'], 'Hello there!')
         return 'ok'
     return 'ok'
