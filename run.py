@@ -1,7 +1,7 @@
 import requests
 import bs4
 from urllib.parse import urlparse, parse_qs
-from settings import LOGIN, PASSWORD, HOMEWORK_URLS, MEAN_URLS, MEAN_ATTEMPTS
+from settings1 import LOGIN, PASSWORD, HOMEWORK_URLS, MEAN_URLS, MEAN_ATTEMPTS
 import logging
 from tasks_parser import parse_task_fields, parse_answers
 import re
