@@ -182,15 +182,18 @@ class Task:
         return task_fields, attempt_number
 
     def upload_answers(self, attempt_number):
+        slots = set([x.split(':')[1].split('_')[0] for x in self.task_fields])
         data = {'sesskey': self.task_metadata.sesskey,
                 'attempt': attempt_number,
                 # Параметры с мудла, без них не работает
                 'nextpage': -1,
-                'next': 'Закончить попытку...', 'scrollpos': '', 'thispage': 0, 'timeup': 0, 'slots': 1}
+                'next': 'Закончить попытку...', 'scrollpos': '', 'thispage': 0, 'timeup': 0,
+                'slots': ', '.join(slots)}
         for elem in self.task_fields:
-            # HACK: some strange field
-            data.update({'{}:1_:flagged'.format(elem.split(':')[0]): 0})
-            data.update({'{}:1_:sequencecheck'.format(elem.split(':')[0]): 1})
+            # HACK: some strange field, we need them for every task group!
+            for number in slots:
+                data.update({'{}:{}_:flagged'.format(elem.split(':')[0], number): 0})
+                data.update({'{}:{}_:sequencecheck'.format(elem.split(':')[0], number): 1})
             break
         if len(self.answer_dict) == 0:
             # Пустые ответы
