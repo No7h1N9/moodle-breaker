@@ -3,7 +3,7 @@ from urllib.parse import parse_qs, urlparse
 
 import bs4
 
-from run import logger, to_float
+from utils import to_float, logger
 from tasks_parser import parse_task_fields, parse_answers
 
 
