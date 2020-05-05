@@ -25,7 +25,7 @@ def authed_login_manager(login_manager: LoginManager):
     yield login_manager
 
 
-@pytest.fixture(params=Path('./fixtures/attempt_page/').iterdir())
+@pytest.fixture(params=Path(basedir/'fixtures'/'attempt_page').iterdir())
 def task_metadata_fixture(request):
     with open(request.param / 'index.htm') as page:
         with open(request.param / 'params.json') as params:
