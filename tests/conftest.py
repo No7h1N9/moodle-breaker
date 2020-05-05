@@ -1,35 +1,23 @@
 import pytest
 from unittest.mock import Mock
-import os
-import re
 import json
+from typing import Tuple, Any
 from pathlib import Path
-from moodle_api.auth import LoginManager
-from moodle_api.problem import TaskMetadata, Task
-
+from moodle_api.parsers import TaskMetadata
+from moodle_api.pages import SummaryPage, FinishedAttemptPage
 
 basedir = Path(__file__).parent
 
 
-@pytest.fixture()
-def login_manager():
-    lm = LoginManager(
-        login=os.environ.get('MOODLE_LOGIN'),
-        password=os.environ.get('MOODLE_PASSWORD'))
-    yield lm
-
-
-@pytest.fixture()
-def authed_login_manager(login_manager: LoginManager):
-    login_manager.authorize()
-    yield login_manager
+def load_fixture(directory) -> Tuple[str, Any]:
+    with open(directory / 'index.htm') as page:
+        with open(directory / 'params.json') as params:
+            return page.read(), json.loads(params.read())
 
 
 @pytest.fixture(params=Path(basedir/'fixtures'/'attempt_page').iterdir(), scope='session')
-def attempt_page_with_params(request):
-    with open(request.param / 'index.htm') as page:
-        with open(request.param / 'params.json') as params:
-            yield page.read(), json.loads(params.read())
+def attempt_page_with_params(request) -> Tuple[bytes, dict]:
+    yield load_fixture(request.param)
 
 
 @pytest.fixture(scope='session')
@@ -39,17 +27,24 @@ def mock_session(attempt_page_with_params):
     yield mock
 
 
-@pytest.fixture()
-def task_obj(mock_session, attempt_page_with_params):
-    _, params = attempt_page_with_params
-    yield Task(params['url'], mock_session), params
+@pytest.fixture(scope='session')
+def summary_parser(attempt_page_with_params):
+    content, params = attempt_page_with_params
+    yield SummaryPage(content), params
+
+
+@pytest.fixture(params=Path(basedir/'fixtures'/'task_page').iterdir(), scope='session')
+def finished_attempt(request) -> Tuple[bytes, dict]:
+    yield load_fixture(request.param)
 
 
 @pytest.fixture(scope='session')
-def task_metadata_fixture(attempt_page_with_params):
-    mock = Mock()
+def finished_attempt_parser(finished_attempt):
+    content, params = finished_attempt
+    yield FinishedAttemptPage(content), params
+
+
+@pytest.fixture(scope='session')
+def task_metadata(attempt_page_with_params):
     content, expected = attempt_page_with_params
-    mock.get().content = content
-    yield TaskMetadata(
-        mock, f'http://moodle.phystech.edu/mod/quiz/view.php?id={expected["cmid"]}'
-    ), expected
+    yield TaskMetadata(content), expected

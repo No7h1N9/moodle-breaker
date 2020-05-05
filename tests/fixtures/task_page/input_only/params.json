@@ -1,0 +1,27 @@
+{
+  "sesskey": "qBQ4WYdZZD",
+  "cmid": "30780",
+  "url": "http://moodle.phystech.edu/mod/quiz/review.php?attempt=550228&cmid=30780",
+  "attempt_id": "550228",
+  "prefix": "q556677",
+  "answers": {
+    "1_sub1_answer": "Kannst",
+    "1_sub2_answer": "soll",
+    "1_sub3_answer": "kann",
+    "1_sub4_answer": "Kannst",
+    "1_sub5_answer": "muss",
+    "1_sub6_answer": "möchte",
+    "1_sub7_answer": "möchte",
+    "1_sub8_answer": "kann",
+    "1_sub9_answer": "Darf",
+    "1_sub10_answer": "musst",
+    "1_sub11_answer": "möchte",
+    "1_sub12_answer": "Willst",
+    "1_sub13_answer": "möchte",
+    "1_sub14_answer": "mag",
+    "1_sub15_answer": "kann",
+    "1_sub16_answer": "muss",
+    "1_sub17_answer": "Kannst",
+    "1_sub18_answer": "muss"
+  }
+}
