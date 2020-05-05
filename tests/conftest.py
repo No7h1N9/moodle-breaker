@@ -5,7 +5,7 @@ import re
 import json
 from pathlib import Path
 from moodle_api.auth import LoginManager
-from moodle_api.problem import TaskMetadata
+from moodle_api.problem import TaskMetadata, Task
 
 
 basedir = Path(__file__).parent
@@ -25,14 +25,27 @@ def authed_login_manager(login_manager: LoginManager):
     yield login_manager
 
 
-@pytest.fixture(params=Path(basedir/'fixtures'/'attempt_page').iterdir(), scope='module')
+@pytest.fixture(params=Path(basedir/'fixtures'/'attempt_page').iterdir(), scope='session')
 def attempt_page_with_params(request):
     with open(request.param / 'index.htm') as page:
         with open(request.param / 'params.json') as params:
             yield page.read(), json.loads(params.read())
 
 
+@pytest.fixture(scope='session')
+def mock_session(attempt_page_with_params):
+    mock = Mock()
+    mock.get().content = attempt_page_with_params[0]
+    yield mock
+
+
 @pytest.fixture()
+def task_obj(mock_session, attempt_page_with_params):
+    _, params = attempt_page_with_params
+    yield Task(params['url'], mock_session), params
+
+
+@pytest.fixture(scope='session')
 def task_metadata_fixture(attempt_page_with_params):
     mock = Mock()
     content, expected = attempt_page_with_params
