@@ -25,14 +25,18 @@ def authed_login_manager(login_manager: LoginManager):
     yield login_manager
 
 
-@pytest.fixture(params=Path(basedir/'fixtures'/'attempt_page').iterdir())
-def task_metadata_fixture(request):
+@pytest.fixture(params=Path(basedir/'fixtures'/'attempt_page').iterdir(), scope='module')
+def attempt_page_with_params(request):
     with open(request.param / 'index.htm') as page:
         with open(request.param / 'params.json') as params:
-            mock = Mock()
-            contents = page.read()
-            mock.get().content = contents
-            expected = json.loads(params.read())
-            yield TaskMetadata(
-                mock, 'http://moodle.phystech.edu/mod/quiz/view.php?id=43122'
-            ), expected
+            yield page.read(), json.loads(params.read())
+
+
+@pytest.fixture()
+def task_metadata_fixture(attempt_page_with_params):
+    mock = Mock()
+    content, expected = attempt_page_with_params
+    mock.get().content = content
+    yield TaskMetadata(
+        mock, f'http://moodle.phystech.edu/mod/quiz/view.php?id={expected["cmid"]}'
+    ), expected
