@@ -1,4 +1,4 @@
-import bs4
+import re
 
 
 def _contains_answer(string):
@@ -15,14 +15,16 @@ class TaskMetadata:
     @property
     def task_metadata(self):
         if not self._task_metadata:
-            # First run
-            soup = bs4.BeautifulSoup(self._content, features='lxml')
-            cmid, sesskey = None, None
-            for tag in soup.find_all('input'):
-                if tag.get('name', '') == 'cmid':
-                    cmid = tag['value']
-                if tag.get('name', '') == 'sesskey':
-                    sesskey = tag['value']
+            cmid = re.findall(r'cmid-\d+', str(self._content))
+            if cmid:
+                cmid = cmid[0][len('cmid-'):]
+            else:
+                cmid = None
+            sesskey = re.findall(r'sesskey=\w+', str(self._content))
+            if sesskey:
+                sesskey = sesskey[0][len('sesskey='):]
+            else:
+                sesskey = None
             self._task_metadata = {'cmid': cmid, 'sesskey': sesskey}
         return self._task_metadata
 

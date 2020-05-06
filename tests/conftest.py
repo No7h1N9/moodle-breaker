@@ -1,6 +1,6 @@
 import pytest
-from unittest.mock import Mock
 import json
+from itertools import chain
 from typing import Tuple, Any
 from pathlib import Path
 from moodle_api.parsers import TaskMetadata
@@ -16,20 +16,13 @@ def load_fixture(directory) -> Tuple[str, Any]:
 
 
 @pytest.fixture(params=Path(basedir/'fixtures'/'attempt_page').iterdir(), scope='session')
-def attempt_page_with_params(request) -> Tuple[bytes, dict]:
+def summary_page(request) -> Tuple[bytes, dict]:
     yield load_fixture(request.param)
 
 
 @pytest.fixture(scope='session')
-def mock_session(attempt_page_with_params):
-    mock = Mock()
-    mock.get().content = attempt_page_with_params[0]
-    yield mock
-
-
-@pytest.fixture(scope='session')
-def summary_parser(attempt_page_with_params):
-    content, params = attempt_page_with_params
+def summary_parser(summary_page):
+    content, params = summary_page
     yield SummaryPage(content), params
 
 
@@ -45,6 +38,21 @@ def finished_attempt_parser(finished_attempt):
 
 
 @pytest.fixture(scope='session')
-def task_metadata(attempt_page_with_params):
-    content, expected = attempt_page_with_params
+def task_metadata_from_summary_page(summary_page):
+    content, expected = summary_page
+    yield TaskMetadata(content), expected
+
+
+@pytest.fixture(scope='session',
+                params=chain(
+                    Path(basedir / 'fixtures' / 'attempt_page').iterdir(),
+                    Path(basedir / 'fixtures' / 'task_page').iterdir()
+                ))
+def all_pages(request):
+    yield load_fixture(request.param)
+
+
+@pytest.fixture()
+def task_metadata_from_all(all_pages):
+    content, expected = all_pages
     yield TaskMetadata(content), expected

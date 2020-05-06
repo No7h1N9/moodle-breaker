@@ -23,7 +23,7 @@ def cheat_on(url, multiple=1):
 
 def cheat_on():
     api = MoodleAPI(login=LOGIN, password=PASSWORD)
-    cmid = '30780'
+    cmid = '30887'
     response = api.get_summary_page(cmid=cmid)
     best_attempt = SummaryPage(response.content).best_attempt_id()
     response = api.get_finished_attempt_page(cmid, best_attempt)
@@ -34,7 +34,7 @@ def cheat_on():
     attempt = RunningAttemptPage(response.content)
     missing_answers = attempt.all_questions.difference(set(answers.keys()))
     if missing_answers:
-        logger.warn('Missing answers for fields: {}'.format(', '.join(missing_answers)))
+        logger.warninig('Missing answers for fields: {}'.format(', '.join(missing_answers)))
 
     api.upload_answers(cmid, metadata.sesskey, attempt.id, attempt.prefix, answers)
     api.finish_attempt(cmid, metadata.sesskey, attempt.id)
