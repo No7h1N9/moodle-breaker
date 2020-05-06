@@ -56,17 +56,26 @@ class RunningAttemptPage(Page):
     @property
     def prefix(self) -> str:
         if not self._prefix:
-            self._prefix = re.findall(r'q\d+:', str(self.content))[0][:-1]
+            try:
+                self._prefix = re.findall(r'q\d+:', str(self.content))[0][:-1]
+            except IndexError:
+                self._prefix = None
         return self._prefix
 
     @property
     def id(self) -> str:
         if not self._id:
-            self._id = re.findall(r'\d+', re.findall(r'attempt=\d+', str(self.content))[0])[0]
+            try:
+                self._id = re.findall(r'\d+', re.findall(r'attempt=\d+', str(self.content))[0])[0]
+            except IndexError:
+                self._id = None
         return self._id
 
     @property
     def all_questions(self) -> set:
         if not self._all_questions:
-            self._all_questions = set([x[:-1] for x in re.findall(r'\d+_sub\d+_\w+"', str(self.content))])
+            try:
+                self._all_questions = set([x[:-1] for x in re.findall(r'\d+_sub\d+_\w+"', str(self.content))])
+            except:
+                self._all_questions = None
         return self._all_questions

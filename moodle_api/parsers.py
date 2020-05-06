@@ -57,6 +57,8 @@ def parse_radio_button_answers(soup):
     correct_answers = {}
     for all_ans_tag in soup.find_all('div', {'class': 'answer'}):
         # Правильный ответ идет прямо в следующем теге
+        if not all_ans_tag.nextSibling:
+            continue
         for ans_candidate in all_ans_tag.nextSibling.contents:
             if _contains_answer(ans_candidate):
                 correct_answer = ans_candidate.split(': ')[1]

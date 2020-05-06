@@ -57,10 +57,9 @@ class MoodleAPI:
                 'http://moodle.phystech.edu/mod/quiz/startattempt.php',
                 {'cmid': cmid, 'sesskey': sesskey}
             )
+            if response.status_code == 404:
+                raise ValueError('Cannot start attempt. Does task have limits?')
             return response
-            attempt_id = re.findall(r'\d+', re.findall(r'attempt=\d+', str(response.content))[0])[0]
-            prefix = re.findall(r'q\d+:', str(response.content))[0][:-1]
-            return attempt_id, prefix
 
     def upload_answers(self, cmid: str, sesskey: str, attempt_id: str,
                        prefix: str, answers: dict) -> None:
