@@ -12,3 +12,10 @@ def test_parse_task_metadata(task_metadata_from_all):
     mt, expected = task_metadata_from_all
     assert mt.cmid == expected['cmid']
     assert mt.sesskey == expected['sesskey']
+
+
+def test_parse_questions(running_attempt_parser):
+    parser, expected = running_attempt_parser
+    assert parser.id == expected['attempt_id']
+    assert parser.prefix == expected['prefix']
+    assert parser.all_questions == set(expected['questions'])

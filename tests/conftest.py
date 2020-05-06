@@ -4,7 +4,7 @@ from itertools import chain
 from typing import Tuple, Any
 from pathlib import Path
 from moodle_api.parsers import TaskMetadata
-from moodle_api.pages import SummaryPage, FinishedAttemptPage
+from moodle_api.pages import SummaryPage, FinishedAttemptPage, RunningAttemptPage
 
 basedir = Path(__file__).parent
 
@@ -31,6 +31,17 @@ def finished_attempt(request) -> Tuple[bytes, dict]:
     yield load_fixture(request.param)
 
 
+@pytest.fixture(params=Path(basedir/'fixtures'/'running_task_page').iterdir(), scope='session')
+def running_attempt(request) -> Tuple[bytes, dict]:
+    yield load_fixture(request.param)
+
+
+@pytest.fixture(scope='session')
+def running_attempt_parser(running_attempt):
+    content, expected = running_attempt
+    yield RunningAttemptPage(content), expected
+
+
 @pytest.fixture(scope='session')
 def finished_attempt_parser(finished_attempt):
     content, params = finished_attempt
@@ -40,7 +51,8 @@ def finished_attempt_parser(finished_attempt):
 @pytest.fixture(scope='session',
                 params=chain(
                     Path(basedir / 'fixtures' / 'attempt_page').iterdir(),
-                    Path(basedir / 'fixtures' / 'finished_task_page').iterdir()
+                    Path(basedir / 'fixtures' / 'finished_task_page').iterdir(),
+                    Path(basedir / 'fixtures' / 'running_task_page').iterdir(),
                 ))
 def all_pages(request):
     yield load_fixture(request.param)
