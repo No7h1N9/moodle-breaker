@@ -37,12 +37,6 @@ def finished_attempt_parser(finished_attempt):
     yield FinishedAttemptPage(content), params
 
 
-@pytest.fixture(scope='session')
-def task_metadata_from_summary_page(summary_page):
-    content, expected = summary_page
-    yield TaskMetadata(content), expected
-
-
 @pytest.fixture(scope='session',
                 params=chain(
                     Path(basedir / 'fixtures' / 'attempt_page').iterdir(),
