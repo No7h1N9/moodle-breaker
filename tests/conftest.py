@@ -26,7 +26,7 @@ def summary_parser(summary_page):
     yield SummaryPage(content), params
 
 
-@pytest.fixture(params=Path(basedir/'fixtures'/'task_page').iterdir(), scope='session')
+@pytest.fixture(params=Path(basedir/'fixtures'/'finished_task_page').iterdir(), scope='session')
 def finished_attempt(request) -> Tuple[bytes, dict]:
     yield load_fixture(request.param)
 
@@ -40,7 +40,7 @@ def finished_attempt_parser(finished_attempt):
 @pytest.fixture(scope='session',
                 params=chain(
                     Path(basedir / 'fixtures' / 'attempt_page').iterdir(),
-                    Path(basedir / 'fixtures' / 'task_page').iterdir()
+                    Path(basedir / 'fixtures' / 'finished_task_page').iterdir()
                 ))
 def all_pages(request):
     yield load_fixture(request.param)
