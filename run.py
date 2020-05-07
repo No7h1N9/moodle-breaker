@@ -34,7 +34,7 @@ def cheat_on():
     attempt = RunningAttemptPage(response.content)
     missing_answers = attempt.all_questions.difference(set(answers.keys()))
     if missing_answers:
-        logger.warninig('Missing answers for fields: {}'.format(', '.join(missing_answers)))
+        logger.warning('Missing answers for fields: {}'.format(', '.join(missing_answers)))
 
     api.upload_answers(cmid, metadata.sesskey, attempt.id, attempt.prefix, answers)
     api.finish_attempt(cmid, metadata.sesskey, attempt.id)
