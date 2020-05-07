@@ -75,7 +75,7 @@ class RunningAttemptPage(Page):
     def all_questions(self) -> set:
         if not self._all_questions:
             try:
-                self._all_questions = set([x[:-1] for x in re.findall(r'\d+_sub\d+_\w+"', str(self.content))])
+                self._all_questions = set([x[:-1] for x in re.findall(r'\d+_sub\d+_answer"', str(self.content))])
             except:
                 self._all_questions = None
         return self._all_questions
