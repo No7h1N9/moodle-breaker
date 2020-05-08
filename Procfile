@@ -1,1 +1,1 @@
-web: alembic upgrade head && python src/longpoll.py
+bot: alembic upgrade head && python src/longpoll.py
