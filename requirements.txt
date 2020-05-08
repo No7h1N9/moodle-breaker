@@ -6,3 +6,4 @@ psycopg2-binary
 vk_api
 pytest
 pytest-dotenv
+sentry-sdk

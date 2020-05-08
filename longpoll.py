@@ -2,6 +2,7 @@
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from collections import defaultdict
+import sentry_sdk
 
 from vk_api.keyboard import VkKeyboard
 from vk_api.utils import get_random_id
@@ -12,6 +13,7 @@ from commands.buttons import *
 from itertools import chain
 
 
+sentry_sdk.init("https://5de487140b7e4a2bb9a408c6dc18d471@o389213.ingest.sentry.io/5227091")
 vk_session = vk_api.VkApi(token=Config().ACCESS_TOKEN)
 longpoll = VkBotLongPoll(vk_session, Config().GROUP_ID)
 vk = vk_session.get_api()
