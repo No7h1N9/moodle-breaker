@@ -1,2 +1,0 @@
-run:
-  bot: python src/longpoll.py
