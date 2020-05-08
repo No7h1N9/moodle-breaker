@@ -12,7 +12,7 @@ def setup_logger(loglevel):
     logger = logging.getLogger("main")
     logger.setLevel(loglevel)
     # create the logging file handler
-    fh = logging.FileHandler("../main.log")
+    fh = logging.StreamHandler()
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(formatter)
