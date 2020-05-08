@@ -1,7 +1,7 @@
 import re
 from urllib.parse import parse_qs, urlparse
 import bs4
-from utils import to_float, logger
+from src.utils import to_float, logger
 from src.moodle_api.parsers import parse_answers
 
 
