@@ -4,10 +4,9 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from collections import defaultdict
 import sentry_sdk
 
-from vk_api.keyboard import VkKeyboard
 from vk_api.utils import get_random_id
 
-from commands.free_input import handle_free_input
+from commands import handle_free_input
 from settings import Config
 from commands.buttons import *
 from itertools import chain
@@ -60,6 +59,7 @@ def main():
 
 
 if __name__ == '__main__':
+    setup_db('sqlite://memory')
     main()
 
 

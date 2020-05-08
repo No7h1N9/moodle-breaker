@@ -1,7 +1,7 @@
-from settings1 import LOGIN, PASSWORD, HOMEWORK_URLS, MEAN_URLS, MEAN_ATTEMPTS
-from moodle_api.network import MoodleAPI
-from moodle_api.parsers import TaskMetadata
-from moodle_api.pages import SummaryPage, FinishedAttemptPage, RunningAttemptPage
+from network import MoodleAPI
+from parsers import TaskMetadata
+import os
+from src.moodle_api import SummaryPage, FinishedAttemptPage, RunningAttemptPage
 
 from utils import logger
 
@@ -22,7 +22,7 @@ def cheat_on(url, multiple=1):
 
 
 def cheat_on():
-    api = MoodleAPI(login=LOGIN, password=PASSWORD)
+    api = MoodleAPI(login=os.environ.get('MOODLE_LOGIN'), password=os.environ.get('MOODLE_PASSWORD'))
     cmid = '30887'
     response = api.get_summary_page(cmid=cmid)
     best_attempt = SummaryPage(response.content).best_attempt_id()

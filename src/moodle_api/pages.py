@@ -2,7 +2,7 @@ import re
 from urllib.parse import parse_qs, urlparse
 import bs4
 from utils import to_float, logger
-from moodle_api.parsers import parse_answers
+from src.moodle_api.parsers import parse_answers
 
 
 class Page:

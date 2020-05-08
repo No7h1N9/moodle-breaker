@@ -3,8 +3,8 @@ import json
 from itertools import chain
 from typing import Tuple, Any
 from pathlib import Path
-from moodle_api.parsers import TaskMetadata
-from moodle_api.pages import SummaryPage, FinishedAttemptPage, RunningAttemptPage
+from src.moodle_api.parsers import TaskMetadata
+from src.moodle_api.pages import SummaryPage, FinishedAttemptPage, RunningAttemptPage
 
 basedir = Path(__file__).parent
 
