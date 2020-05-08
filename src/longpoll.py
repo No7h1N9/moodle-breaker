@@ -7,7 +7,6 @@ import sentry_sdk
 
 from vk_api.utils import get_random_id
 
-from settings import Config
 from models import DatabaseManager
 from moodle_api.network import MoodleAPI
 from moodle_api.breaker import break_task
@@ -18,8 +17,8 @@ from commands.buttons import *
 
 manager = DatabaseManager(os.environ.get('DATABASE_URL'))
 sentry_sdk.init("https://5de487140b7e4a2bb9a408c6dc18d471@o389213.ingest.sentry.io/5227091")
-vk_session = vk_api.VkApi(token=Config().ACCESS_TOKEN)
-longpoll = VkBotLongPoll(vk_session, Config().GROUP_ID)
+vk_session = vk_api.VkApi(token=os.environ.get('ACCESS_TOKEN'))
+longpoll = VkBotLongPoll(vk_session, os.environ.get('GROUP_ID'))
 vk = vk_session.get_api()
 
 
