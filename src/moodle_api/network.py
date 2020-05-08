@@ -30,13 +30,6 @@ class MoodleAPI:
         parsed = bs4.BeautifulSoup(response.content, features='lxml')
         return 'Вход' not in str(parsed.title)
 
-    @staticmethod
-    def _parse_cmid(url: str) -> str:
-        try:
-            return re.findall(r'id=\d+$', url)[0][len('id='):]
-        except IndexError:
-            raise ValueError('Incorrect task URL')
-
     @contextmanager
     def session(self) -> requests.Session:
         if not self.is_authorized:

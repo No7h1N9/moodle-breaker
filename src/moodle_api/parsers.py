@@ -7,6 +7,13 @@ def _contains_answer(string):
     return 'Правильный' in string or 'правильный' in string
 
 
+def parse_cmid(url: str) -> str:
+    try:
+        return re.findall(r'id=\d+$', url)[0][len('id='):]
+    except IndexError:
+        raise ValueError('Incorrect task URL')
+
+
 class TaskMetadata:
     def __init__(self, content: bytes):
         self._content = content
