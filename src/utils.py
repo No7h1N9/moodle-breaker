@@ -1,4 +1,5 @@
 import logging
+import sys
 
 
 def to_float(s):
@@ -12,7 +13,7 @@ def setup_logger(loglevel):
     logger = logging.getLogger("main")
     logger.setLevel(loglevel)
     # create the logging file handler
-    fh = logging.StreamHandler()
+    fh = logging.StreamHandler(sys.stdout)
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(formatter)
@@ -21,4 +22,4 @@ def setup_logger(loglevel):
     return logger
 
 
-logger = setup_logger(logging.DEBUG)
+logger = setup_logger(logging.INFO)
