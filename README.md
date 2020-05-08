@@ -1,7 +1,7 @@
 # Moodle breaker
 _Make your Moodle life easier_
 
-## Запуск
+## Запуск (НЕАКТУАЛЬНО)
 ```bash
 git clone https://github.com/alekseik1/moodle-breaker
 cd moodle-breaker
