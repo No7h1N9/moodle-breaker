@@ -7,3 +7,4 @@ vk_api
 pytest
 pytest-dotenv
 sentry-sdk
+alembic
