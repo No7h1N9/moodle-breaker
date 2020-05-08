@@ -20,7 +20,7 @@ def send_message(to_id, message: str, keyboard: VkKeyboard = None) -> None:
     vk.messages.send(
         peer_id=to_id,
         random_id=get_random_id(),
-        keyboard=keyboard.get_keyboard(),
+        keyboard=getattr(keyboard, 'get_keyboard', lambda: None)(),
         message=message)
 
 
