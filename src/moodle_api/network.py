@@ -40,7 +40,7 @@ class MoodleAPI:
         with self.session() as s:
             return s.get(f'http://moodle.phystech.edu/mod/quiz/view.php?id={cmid}')
 
-    def get_finished_attempt_page(self, cmid: str, attempt_id: str) -> Tuple[str, str]:
+    def get_finished_attempt_page(self, cmid: str, attempt_id: str) -> requests.Response:
         with self.session() as s:
             return s.get(f'http://moodle.phystech.edu/mod/quiz/review.php?attempt={attempt_id}&cmid={cmid}')
 
