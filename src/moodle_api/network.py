@@ -1,6 +1,7 @@
 import requests
 import bs4
 from contextlib import contextmanager
+from src.utils import logger
 from typing import Tuple
 import re
 
@@ -12,6 +13,7 @@ class MoodleAPI:
         self._login_token = self._get_login_token()
 
     def auth(self):
+        logger.info(f'login="{self.login}"; token={self._login_token}')
         self._session.post(
             'http://moodle.phystech.edu/login/index.php',
             {'username': self.login, 'password': self.password,
@@ -37,14 +39,17 @@ class MoodleAPI:
         yield self._session
 
     def get_summary_page(self, cmid: str) -> requests.Response:
+        logger.info(f'cmid={cmid}')
         with self.session() as s:
             return s.get(f'http://moodle.phystech.edu/mod/quiz/view.php?id={cmid}')
 
     def get_finished_attempt_page(self, cmid: str, attempt_id: str) -> requests.Response:
+        logger.info(f'cmid={cmid}; attempt_id={attempt_id}')
         with self.session() as s:
             return s.get(f'http://moodle.phystech.edu/mod/quiz/review.php?attempt={attempt_id}&cmid={cmid}')
 
     def start_attempt(self, cmid: str, sesskey: str) -> requests.Response:
+        logger.info(f'cmid={cmid}')
         with self.session() as s:
             response = s.post(
                 'http://moodle.phystech.edu/mod/quiz/startattempt.php',
@@ -64,6 +69,7 @@ class MoodleAPI:
         :param answers: {'1_sub6_answer': 'Hell', ...}
         """
         with self.session() as s:
+            logger.info(f'starting building request')
             data = {'sesskey': sesskey,
                     'attempt': attempt_id,
                     # Параметры с мудла, без них не работает
@@ -89,6 +95,7 @@ class MoodleAPI:
             '''
             for form, ans in answers.items():
                 data.update({f'{prefix}:{form}': ans})
+            logger.info(f'data is: {data}')
 
             response = s.post(
                 'http://moodle.phystech.edu/mod/quiz/processattempt.php?cmid={}'.format(cmid),
@@ -96,6 +103,7 @@ class MoodleAPI:
             )
 
     def finish_attempt(self, cmid: str, sesskey: str, attempt_id: str) -> None:
+        logger.info(f'cmid={cmid}; sesskey={sesskey}; attempt_id={attempt_id}')
         with self.session() as s:
             s.post(
                 'http://moodle.phystech.edu/mod/quiz/processattempt.php',
