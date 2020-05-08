@@ -1,16 +1,9 @@
-LOGIN = ''
-PASSWORD = ''
-HOMEWORK_URLS = [
+import os
+from dotenv import load_dotenv
 
-]
 
-########################################
-# Чтобы с двух попыток поиметь 10 баллов, надо 38 запусков.
-# ALERT! Если задание не показывает ответы, НИ В КОЕМ СЛУЧАЕ не пишите сюда ссылку,
-# иначе вы запорете задание без шансов что-либо исправить!
-# Вас предупредили
-########################################
-MEAN_URLS = [
-
-]
-MEAN_ATTEMPTS = 40
+class Config:
+    load_dotenv()
+    CONFIRMATION_TOKEN = os.environ['CONFIRMATION_TOKEN']
+    ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
+    GROUP_ID = os.environ['GROUP_ID']

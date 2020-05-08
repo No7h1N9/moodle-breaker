@@ -1,2 +1,8 @@
 requests
 bs4
+python-dotenv
+sqlalchemy
+psycopg2-binary
+vk_api
+pytest
+pytest-dotenv
