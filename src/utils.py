@@ -17,7 +17,7 @@ def setup_logger(loglevel):
     # create the logging file handler
     fh = logging.StreamHandler(sys.stdout)
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(funcName) - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(funcName)s - %(message)s')
     fh.setFormatter(formatter)
     # add handler to logger object
     logger.addHandler(fh)
