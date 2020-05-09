@@ -1,4 +1,5 @@
 import re
+from bs4 import NavigableString
 
 
 def _contains_answer(string):
@@ -102,9 +103,35 @@ def parse_picker_answers(soup):
     return correct_answers
 
 
+def parse_checkbox_answers(soup):
+    task_fields = set()
+    prefix = None
+    for possible_tag in soup.find_all('input', {'type': 'checkbox'}):
+        prefix_and_field = re.findall(r'.*:\d+_choice\d+', possible_tag.get('id', ''))
+        if not prefix_and_field:
+            continue
+        prefix, field = prefix_and_field[0].split(':')
+        task_fields.add(field)
+    result = dict(zip(task_fields, ['0']*len(task_fields)))
+    tmp = soup.find_all('div', {'class': 'rightanswer'})
+    right_answers = []
+    for i in tmp:
+        right_answers.append([x.strip() for x in i.contents[0].split(':')[1].split(',')])
+    for field in task_fields:
+        for label_tag in soup.find_all('label', {'for': f'{prefix}:{field}'}):
+            for string in label_tag.contents:
+                if not isinstance(string, NavigableString):
+                    continue
+                for i, arr in enumerate(right_answers[int(field.split('_')[0])-1]):
+                    if string in arr:
+                        result[field] = '1'
+    return result
+
+
 def parse_answers(soup):
     result = dict()
-    handlers = [parse_plain_text_answers, parse_radio_button_answers, parse_picker_answers]
+    handlers = [parse_plain_text_answers, parse_radio_button_answers, parse_picker_answers,
+                parse_checkbox_answers]
     while handlers:
         result.update(handlers.pop()(soup))
     return result
