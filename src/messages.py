@@ -65,4 +65,7 @@ http://moodle.phystech.edu/mod/quiz/review.php?attempt=528310&cmid=30805
 
 BREAKING_DONE = '''
 Взлом завершен. Проверяй мудл :)
+
+Если что-то не сработало, сохрани страницу с заданием (ее скрины обычно в общий чат кидают) в формате .htm или .html \
+и отправь админам группы. Это делается через Ctrl+S в Windows/Linux, Cmd+S в MacOS
 '''
