@@ -4,6 +4,9 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import os
 from typing import List
 import sentry_sdk
+from requests.exceptions import ReadTimeout
+from utils import logger
+from time import sleep
 
 from vk_api.utils import get_random_id
 
@@ -82,6 +85,11 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    while True:
+        try:
+            main()
+        except ReadTimeout as e:
+            logger.error(f'lost connection with vk. Retrying in 10 seconds... Error: {e}')
+            sleep(10)
 
 
