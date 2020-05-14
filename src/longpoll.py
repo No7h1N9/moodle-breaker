@@ -20,10 +20,10 @@ from commands.buttons import *
 
 
 manager = DatabaseManager(os.environ.get('DATABASE_URL'))
-sentry_sdk.init(
-    dsn="https://5de487140b7e4a2bb9a408c6dc18d471@o389213.ingest.sentry.io/5227091",
-    integrations=[SqlalchemyIntegration()]
-)
+#sentry_sdk.init(
+#    dsn="https://5de487140b7e4a2bb9a408c6dc18d471@o389213.ingest.sentry.io/5227091",
+#    integrations=[SqlalchemyIntegration()]
+#)
 vk_session = vk_api.VkApi(token=os.environ.get('ACCESS_TOKEN'))
 longpoll = VkBotLongPoll(vk_session, os.environ.get('GROUP_ID'))
 vk = vk_session.get_api()
@@ -77,8 +77,11 @@ def handle_message(event):
             return
         send_message(user_id, CORRECT_TASK_URL)
         api = MoodleAPI(login=user.login, password=user.password)
-        break_task(api, cmid)
-        send_message(user_id, BREAKING_DONE)
+        broken, unbroken = break_task(api, cmid)
+        if not unbroken and broken:
+            send_message(user_id, BREAKING_DONE)
+        else:
+            send_message(user_id, FIELDS_ARE_MISSING)
 
 
 def main():
