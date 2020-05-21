@@ -76,9 +76,18 @@ def handle_message(event):
             send_message(user_id, INCORRECT_TASK_URL)
             return
         send_message(user_id, CORRECT_TASK_URL)
+        # Many attempts
+        try:
+            count = int(message_text.split(' ')[0])
+            logger.info(f'requested {count} attempts')
+        except ValueError:
+            count = 1
+            logger.info(f'attempts not specified, falling back to 1')
         api = MoodleAPI(login=user.login, password=user.password)
         broken, unbroken = break_task(api, cmid)
         if not unbroken and broken:
+            for _ in range(count-1):
+                break_task(api, cmid)
             send_message(user_id, BREAKING_DONE)
         else:
             send_message(user_id, FIELDS_ARE_MISSING)
