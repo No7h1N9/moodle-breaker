@@ -1,0 +1,13 @@
+language: python
+cache: pip
+jobs:
+  include:
+    - stage: "Tests"
+      name: "pytest"
+      script: pytest
+    - stage: "deploy"
+      name: "heroku"
+      deploy:
+        provider: heroku
+        api_key:
+          secure: "YOUR ENCRYPTED API KEY"
