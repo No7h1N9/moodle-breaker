@@ -1,4 +1,5 @@
 language: python
+python: "3.8"
 cache: pip
 jobs:
   include:
