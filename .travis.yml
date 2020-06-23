@@ -8,6 +8,7 @@ jobs:
     script: pytest
   - stage: deploy
     name: heroku
+    script: skip
     deploy:
       provider: heroku
       api_key:
