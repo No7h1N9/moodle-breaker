@@ -1,5 +1,8 @@
 import re
+from typing import Dict, List
+import bs4
 from bs4 import NavigableString
+from bs4 import BeautifulSoup
 
 
 def _contains_answer(string):
@@ -128,10 +131,48 @@ def parse_checkbox_answers(soup):
     return result
 
 
+def parse_one_string_answers(soup: BeautifulSoup) -> Dict[str, str]:
+    """
+    Парсит страницы с ответом в тегах
+    <div class="rightanswer" id="yui_3_17_2_1_1597047509273_134">Правильный ответ: make a living</div>
+
+    :param soup: Суп из страницы
+    :return: словарь правильных ответов
+    """
+    result = {}     # type: Dict[str, str]
+    answer_tags = soup.find_all(attrs={'class': 'rightanswer'}) # type: List[bs4.Tag]
+    for tag in answer_tags:
+        # Ищем ответ
+        # После split() будет ['', <содержательно>], поэтому [1:] + join() (если в ответе есть ':')
+        ans = ''.join(re.split(r'Правильный ответ: ', tag.get_text())[1:])
+        # Если ответа нет, сразу выходим - парсер не работает
+        if not ans:
+            break
+        # Ищем соответствующий 1sub_ans...
+        # Для этого идем вверх по дереву и на каждом уровне по соседям запускаем поиск в глубину (shit!)
+        # пока не найдем тег по регулярке 'q\d+:.*'
+        current_tag = tag
+        found_name = ''
+        while not found_name:
+            candidate = ''  # type: str
+            for child in current_tag.findChildren(recursive=True):    # type: bs4.Tag
+                if 'id' in child.attrs:
+                    candidate = re.findall(r'q\d+:.*', child.attrs['id'])   # type: List[str]
+                    if len(candidate) != 1:
+                        candidate = ''
+                        continue
+                    candidate = candidate[0].split(':')[1]   # type: str
+                    break
+            found_name = candidate
+            current_tag = current_tag.parent
+        result.update({found_name: ans})
+    return result
+
+
 def parse_answers(soup):
     result = dict()
     handlers = [parse_plain_text_answers, parse_radio_button_answers, parse_picker_answers,
-                parse_checkbox_answers]
+                parse_checkbox_answers, parse_one_string_answers]
     while handlers:
         result.update(handlers.pop()(soup))
     return result
