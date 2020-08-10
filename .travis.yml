@@ -11,5 +11,7 @@ jobs:
     script: skip
     deploy:
       provider: heroku
+      on:
+        branch: master
       api_key:
         secure: DJ4rrR1rmrTflZG7HEU3ITaY27LebG6VdrvORmHzaDirJueeudJSXToV6xT+KLdX/dfjGUDvow0sxLSX3q8eMWRHRegGnsb/5TDNkOSD9HloIvujeO1JDqcxCv/lZ5Yl+i01CKVgljZCa95X8aRSz6IXmUDyBiYthz4OAATDCzORct+EkT7AVI8DYwyfkd6XxYV6qhy0R5mifesZoWEZKnc+LrgWqMOYHp5qyCIIIrchGqNl0SDBVCtZR9InsJEymRWutBdX67pAAoaLNPKT9q1WNFqXadd1OZv7khsh9L6vojAhzgyhYgIWUxyIstuOQRQgaDQJX3dXWaJFChJ69nCiq2xxbXFUNrEjgauGE3rATr+KrJsNFj8kajiXe18OqHgbu6/bjO+qtGBACVIbR+Cllgg7ECCJHVdYaXm4rXx7mZ3rnWSN9qO3zobMVaCPzOsZnu2I15d+3dv6JeJZXTTR6Pg94hxR7Xg2ctvqSAOUJ/D4TWa6/EuiQfHyfYKSWtj5Y07Aae/J90VWE2Fq0Jss1wD8rxg6rFks5nsX7IuYQE+boaSk5JMJ24Y0FCfokvQBYNjW44jR8OPJjNjp4q5zTKLJsU1cS93oRhTBrj3ZMKNRr+gYVDNdNZGUrL+hWj68cWQAPCWS4wxiFNpSUeB6Id6ASlqWSv2jt9JkPjE=
