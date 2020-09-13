@@ -35,7 +35,7 @@ class SummaryPage(Page):
         best_url = None
         if best_attempt:
             try:
-                best_url = best_attempt.find('td', {'class': f'c{total_cols}'}).next['href']
+                best_url = best_attempt.find('a', {'title': 'Просмотр своих ответов этой попытки'})['href']
             except TypeError:
                 # Если есть незавершенная попытка, он не сможет найти 'href' у следующего тега
                 # Поэтому мы просто пометим best_attempt в None
