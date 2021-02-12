@@ -26,6 +26,15 @@ jobs:
     needs: [test]
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: relekang/python-semantic-release@master
+      - uses: actions/checkout@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: install semantic release
+        run: |
+          python -m pip install --upgrade pip
+          pip install python-semantic-release
+      - name: run semantic release
+        run: semantic-release publish -v DEBUG -D commit_author="github-actions <action@github.com>"
