@@ -6,7 +6,7 @@ class ButtonBase:
     Кнопочка-команда в диалоге
     """
     button_text = ''    # type: str
-    button_color = VkKeyboardColor.DEFAULT      # type: str
+    button_color = VkKeyboardColor.PRIMARY      # type: str
 
     def on_click(self, user_id, payload=None):
         pass
