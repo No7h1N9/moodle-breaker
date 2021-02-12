@@ -37,4 +37,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install python-semantic-release
       - name: run semantic release
-        run: semantic-release publish -v DEBUG -D commit_author="github-actions <action@github.com>"
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "action@github.com"
+          semantic-release publish -v DEBUG -D commit_author="github-actions <action@github.com>"
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
