@@ -1,9 +1,6 @@
-name: deploy to Heroku
+name: deploy release to Heroku
 
-on:
-  push:
-    tags:
-      - 'v*'
+on: release
 
 jobs:
   deploy:
