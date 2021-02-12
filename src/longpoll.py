@@ -76,6 +76,9 @@ def handle_message(event):
             count = 1
             logger.info(f'attempts not specified, falling back to 1')
         api = MoodleAPI(login=user.login, password=user.password)
+        if not api.is_authorized:
+            # TODO: feature to change password
+            send_message(user_id, MOODLE_DECLINED_LOGIN)
         broken, unbroken = break_task(api, cmid)
         if not unbroken and broken:
             for _ in range(count-1):
