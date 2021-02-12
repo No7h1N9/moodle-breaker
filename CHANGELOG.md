@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.6 (2021-02-12)
+### Fix
+* Remove deploy stage ([`998de6c`](https://github.com/alekseik1/moodle-breaker/commit/998de6cb11677604fef38b9e0519048be04357fe))
+
 ## v1.1.5 (2021-02-12)
 ### Fix
 * Better ci config ([`01f64a6`](https://github.com/alekseik1/moodle-breaker/commit/01f64a6bcc18d6c08474a4b22307eb204cf8eabd))
