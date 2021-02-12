@@ -1,6 +1,9 @@
 name: test and deploy to Heroku
 
-on: push
+on:
+  push:
+    tags-ignore:
+      - v*
 
 jobs:
   test:
