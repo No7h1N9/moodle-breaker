@@ -3,8 +3,6 @@ import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import os
 from typing import List
-import sentry_sdk
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from requests.exceptions import ReadTimeout
 from utils import logger
 from time import sleep
@@ -19,10 +17,6 @@ from messages import *
 
 
 manager = DatabaseManager(os.environ.get('DATABASE_URL'))
-#sentry_sdk.init(
-#    dsn="https://5de487140b7e4a2bb9a408c6dc18d471@o389213.ingest.sentry.io/5227091",
-#    integrations=[SqlalchemyIntegration()]
-#)
 vk_session = vk_api.VkApi(token=os.environ.get('ACCESS_TOKEN'))
 longpoll = VkBotLongPoll(vk_session, os.environ.get('GROUP_ID'))
 vk = vk_session.get_api()
