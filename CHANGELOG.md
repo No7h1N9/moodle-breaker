@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.7 (2021-02-12)
+### Fix
+* Deploy only after tests and on master ([`198c83f`](https://github.com/alekseik1/moodle-breaker/commit/198c83f814593276594ba904c2a1adb2654ccf87))
+
 ## v1.1.6 (2021-02-12)
 ### Fix
 * Remove deploy stage ([`998de6c`](https://github.com/alekseik1/moodle-breaker/commit/998de6cb11677604fef38b9e0519048be04357fe))
