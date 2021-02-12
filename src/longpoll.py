@@ -16,7 +16,6 @@ from moodle_api.network import MoodleAPI
 from moodle_api.breaker import break_task
 from moodle_api.parsers import parse_cmid
 from messages import *
-from commands.buttons import *
 
 
 manager = DatabaseManager(os.environ.get('DATABASE_URL'))
@@ -29,11 +28,10 @@ longpoll = VkBotLongPoll(vk_session, os.environ.get('GROUP_ID'))
 vk = vk_session.get_api()
 
 
-def send_message(to_id, message: str, keyboard: VkKeyboard = None) -> None:
+def send_message(to_id, message: str) -> None:
     vk.messages.send(
         peer_id=to_id,
         random_id=get_random_id(),
-        keyboard=getattr(keyboard, 'get_keyboard', lambda: None)(),
         message=message)
 
 
