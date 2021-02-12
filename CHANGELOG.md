@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.4 (2021-02-12)
+### Fix
+* **requirements:** Duplicate ([`49a6544`](https://github.com/alekseik1/moodle-breaker/commit/49a654473ed08e08ee77076c5d22be279777a727))
+* Remove Sentry from requirements ([`d5b2ed5`](https://github.com/alekseik1/moodle-breaker/commit/d5b2ed570a0c19059abb20704c90d639cef8d4ac))
+
 ## v1.1.3 (2021-02-12)
 ### Fix
 * Remove broken Sentry ([`e05c3c2`](https://github.com/alekseik1/moodle-breaker/commit/e05c3c21769d0b5a2049f2f6bd5c00ab0805db0e))
