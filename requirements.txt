@@ -6,6 +6,5 @@ sqlalchemy
 psycopg2-binary
 vk_api
 pytest
-pytest-dotenv
 python-semantic-release
 alembic
