@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.5 (2021-02-12)
+### Fix
+* Better ci config ([`01f64a6`](https://github.com/alekseik1/moodle-breaker/commit/01f64a6bcc18d6c08474a4b22307eb204cf8eabd))
+
 ## v1.1.4 (2021-02-12)
 ### Fix
 * **requirements:** Duplicate ([`49a6544`](https://github.com/alekseik1/moodle-breaker/commit/49a654473ed08e08ee77076c5d22be279777a727))
