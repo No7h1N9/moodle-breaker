@@ -1,8 +1,9 @@
 name: deploy release to Heroku
 
 on:
-  release:
-    types: [published]
+  push:
+    paths:
+      - 'src/metadata.py'
 
 jobs:
   deploy:
