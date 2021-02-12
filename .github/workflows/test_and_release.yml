@@ -43,3 +43,16 @@ jobs:
           semantic-release publish -v DEBUG -D commit_author="github-actions <action@github.com>"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    name: deploy to Heroku
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.10.9
+        name: deploy to Heroku
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          remote_branch: master
+
