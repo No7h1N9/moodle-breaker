@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.1 (2021-02-25)
+### Fix
+* **moodle-api:** Wait 2 seconds before starting anew ([`a06b5af`](https://github.com/alekseik1/moodle-breaker/commit/a06b5afe6b719ee8b806bc1285eac57e8a3b98d3))
+
 ## v1.2.0 (2021-02-12)
 ### Feature
 * **messages:** Inform about multiple attempts ([`031c860`](https://github.com/alekseik1/moodle-breaker/commit/031c8604fa0284e5bb3eb9e0b06b9b87404d3b20))
