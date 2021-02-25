@@ -26,6 +26,9 @@ def break_task(api: MoodleAPI, cmid: str) -> Tuple[dict, set]:
     best_attempt = SummaryPage(response.content).best_attempt_id()
     if not best_attempt:
         run_empty_attempt(api, cmid)
+        # NOTE: do not repeat yourself
+        response = api.get_summary_page(cmid=cmid)
+        metadata = TaskMetadata(response.content)
         best_attempt = SummaryPage(response.content).best_attempt_id()
     logger.info(f'Found best attempt: {best_attempt}')
     best_attempt = SummaryPage(response.content).best_attempt_id()
