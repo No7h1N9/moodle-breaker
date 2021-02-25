@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2021-02-12)
+### Feature
+* **messages:** Inform about multiple attempts ([`031c860`](https://github.com/alekseik1/moodle-breaker/commit/031c8604fa0284e5bb3eb9e0b06b9b87404d3b20))
+
+### Fix
+* **vk:** Send message on moodle auth error ([`50b69f3`](https://github.com/alekseik1/moodle-breaker/commit/50b69f3ad8a716cba1f9a317900184a51f3279d1))
+
 ## v1.1.7 (2021-02-12)
 ### Fix
 * Deploy only after tests and on master ([`198c83f`](https://github.com/alekseik1/moodle-breaker/commit/198c83f814593276594ba904c2a1adb2654ccf87))
