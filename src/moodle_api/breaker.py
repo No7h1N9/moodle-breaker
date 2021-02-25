@@ -1,3 +1,4 @@
+import time
 from moodle_api.network import MoodleAPI
 from moodle_api.pages import SummaryPage, FinishedAttemptPage, RunningAttemptPage
 from moodle_api.parsers import TaskMetadata
@@ -31,6 +32,10 @@ def break_task(api: MoodleAPI, cmid: str) -> Tuple[dict, set]:
     response = api.get_finished_attempt_page(cmid, best_attempt)
     answers = FinishedAttemptPage(response.content).parse_answers()
     logger.info(f'parsed answers for attempt {best_attempt}: {answers}')
+
+    logger.info('Hack: waiting 2 seconds for moodle to show answers')
+    time.sleep(2)
+
     logger.info(f'Starting new attempt...')
     response = api.start_attempt(cmid, metadata.sesskey)
     attempt = RunningAttemptPage(response.content)
