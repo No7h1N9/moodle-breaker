@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.2 (2021-02-25)
+### Fix
+* **moodle-api:** Reload summary page after an empty attempt ([`9a5e390`](https://github.com/alekseik1/moodle-breaker/commit/9a5e390f390c614312aeb2129cd08aba878335eb))
+
 ## v1.2.1 (2021-02-25)
 ### Fix
 * **moodle-api:** Wait 2 seconds before starting anew ([`a06b5af`](https://github.com/alekseik1/moodle-breaker/commit/a06b5afe6b719ee8b806bc1285eac57e8a3b98d3))
