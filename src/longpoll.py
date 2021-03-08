@@ -44,6 +44,10 @@ def valid_credentials(login, password):
 def handle_message(event):
     message_text, message_id = event.obj.text, event.obj.id
     user_id = int(event.obj.from_id)
+    # Ad-hoc to forget user
+    if message_text == "забудь меня":
+        manager.delete_user(user_id)
+        return
     if manager.first_seen(user_id):
         send_message(user_id, FIRST_ENTRY_MESSAGE)
         manager.add_user(user_id, '', '')

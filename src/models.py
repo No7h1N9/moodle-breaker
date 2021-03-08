@@ -54,3 +54,10 @@ class DatabaseManager:
         user.login, user.password = new_login, new_password
         self.session.commit()
         return True
+
+    def delete_user(self, id: int):
+        try:
+            self.session.delete(User(id=id))
+            self.session.commit()
+        except Exception as e:
+            print(f'Failed to delete user {id} with error {e}')
