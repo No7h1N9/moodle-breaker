@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.0 (2021-03-08)
+### Feature
+* Delete user command ([`2af2ce2`](https://github.com/alekseik1/moodle-breaker/commit/2af2ce2cd6937d83ea57dcdb48b52fadb84811ed))
+
 ## v1.2.2 (2021-02-25)
 ### Fix
 * **moodle-api:** Reload summary page after an empty attempt ([`9a5e390`](https://github.com/alekseik1/moodle-breaker/commit/9a5e390f390c614312aeb2129cd08aba878335eb))
