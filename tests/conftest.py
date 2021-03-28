@@ -1,64 +1,51 @@
 import pytest
-import json
-from itertools import chain
-from typing import Tuple, Any
 from pathlib import Path
-from src.moodle_api.parsers import TaskMetadata
-from src.moodle_api.pages import SummaryPage, FinishedAttemptPage, RunningAttemptPage
+from pytest_cases import fixture
 
 basedir = Path(__file__).parent
 
+FIXTURE_PATH = Path(basedir/'fixtures')
+ATTEMPT_PAGE_DIR = FIXTURE_PATH/'attempt_page'
+RUNNING_ATTEMPT_DIR = FIXTURE_PATH/'running_task_page'
+SINGLE_TYPE_DIR = FIXTURE_PATH/'finished_task_page'/'single_type'
 
-def load_fixture(directory) -> Tuple[str, Any]:
-    with open(directory / 'index.htm') as page:
-        with open(directory / 'params.json') as params:
-            return page.read(), json.loads(params.read())
-
-
-@pytest.fixture(params=Path(basedir/'fixtures'/'attempt_page').iterdir(), scope='session')
-def summary_page(request) -> Tuple[bytes, dict]:
-    yield load_fixture(request.param)
-
-
-@pytest.fixture(scope='session')
-def summary_parser(summary_page):
-    content, params = summary_page
-    yield SummaryPage(content), params
+PICKER_ONLY_DIR = SINGLE_TYPE_DIR/'picker'
+INPUT_ONLY_DIR = SINGLE_TYPE_DIR/'input'
+RADIO_ONLY_DIR = SINGLE_TYPE_DIR/'radio'
+CHECKBOX_ONLY_DIR = SINGLE_TYPE_DIR/'checkbox'
 
 
-@pytest.fixture(params=Path(basedir/'fixtures'/'finished_task_page').iterdir(), scope='session')
-def finished_attempt(request) -> Tuple[bytes, dict]:
-    yield load_fixture(request.param)
+@fixture
+@pytest.mark.parametrize('directory', PICKER_ONLY_DIR.iterdir(), scope='session', ids=lambda param: param.name)
+def picker_only_directory(directory: Path):
+    return directory
 
 
-@pytest.fixture(params=Path(basedir/'fixtures'/'running_task_page').iterdir(), scope='session')
-def running_attempt(request) -> Tuple[bytes, dict]:
-    yield load_fixture(request.param)
+@fixture
+@pytest.mark.parametrize('directory', INPUT_ONLY_DIR.iterdir(), scope='session', ids=lambda param: param.name)
+def input_only_directory(directory: Path):
+    return directory
 
 
-@pytest.fixture(scope='session')
-def running_attempt_parser(running_attempt):
-    content, expected = running_attempt
-    yield RunningAttemptPage(content), expected
+@fixture
+@pytest.mark.parametrize('directory', RADIO_ONLY_DIR.iterdir(), scope='session', ids=lambda param: param.name)
+def radio_only_directory(directory: Path):
+    return directory
 
 
-@pytest.fixture(scope='session')
-def finished_attempt_parser(finished_attempt):
-    content, params = finished_attempt
-    yield FinishedAttemptPage(content), params
+@fixture
+@pytest.mark.parametrize('directory', CHECKBOX_ONLY_DIR.iterdir(), scope='session', ids=lambda param: param.name)
+def checkbox_only_directory(directory: Path):
+    return directory
 
 
-@pytest.fixture(scope='session',
-                params=chain(
-                    Path(basedir / 'fixtures' / 'attempt_page').iterdir(),
-                    Path(basedir / 'fixtures' / 'finished_task_page').iterdir(),
-                    Path(basedir / 'fixtures' / 'running_task_page').iterdir(),
-                ))
-def all_pages(request):
-    yield load_fixture(request.param)
+@fixture
+@pytest.mark.parametrize('directory', ATTEMPT_PAGE_DIR.iterdir(), scope='session', ids=lambda param: param.name)
+def attempt_page_directory(directory: Path):
+    return directory
 
 
-@pytest.fixture()
-def task_metadata_from_all(all_pages):
-    content, expected = all_pages
-    yield TaskMetadata(content), expected
+@fixture
+@pytest.mark.parametrize('directory', RUNNING_ATTEMPT_DIR.iterdir(), scope='session', ids=lambda param: param.name)
+def running_attempt_directory(directory: Path):
+    return directory

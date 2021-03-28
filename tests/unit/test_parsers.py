@@ -1,21 +1,30 @@
-def test_find_best_own_url(summary_parser):
-    parser, expected = summary_parser
-    assert parser.best_attempt_id() == expected['best_attempt_id']
+from src.moodle_api.pages import FinishedAttemptPage, SummaryPage, RunningAttemptPage
+from src.moodle_api.parsers import TaskMetadata
+from pytest_cases import parametrize_with_cases
 
 
-def test_parse_answers(finished_attempt_parser):
-    parser, expected = finished_attempt_parser
-    assert parser.parse_answers() == expected['answers']
+@parametrize_with_cases('page_content, task_metadata', prefix='case_attempt_page_')
+def test_find_best_own_url(page_content, task_metadata):
+    parser = SummaryPage(page_content)
+    assert parser.best_attempt_id() == task_metadata['best_attempt_id']
 
 
-def test_parse_task_metadata(task_metadata_from_all):
-    mt, expected = task_metadata_from_all
-    assert mt.cmid == expected['cmid']
-    assert mt.sesskey == expected['sesskey']
+@parametrize_with_cases("page_content, task_metadata", prefix='case_finished_task_')
+def test_parse_answers(page_content, task_metadata):
+    parser = FinishedAttemptPage(page_content)
+    assert parser.parse_answers() == task_metadata['answers']
 
 
-def test_parse_questions(running_attempt_parser):
-    parser, expected = running_attempt_parser
-    assert parser.id == expected['attempt_id']
-    assert parser.prefix == expected['prefix']
-    assert parser.all_questions == set(expected['questions'])
+@parametrize_with_cases('page_content, task_metadata')
+def test_parse_task_metadata(page_content, task_metadata):
+    mt = TaskMetadata(page_content)
+    assert mt.cmid == task_metadata['cmid']
+    assert mt.sesskey == task_metadata['sesskey']
+
+
+@parametrize_with_cases('page_content, task_metadata', prefix='case_running_attempt_')
+def test_parse_questions(page_content, task_metadata):
+    parser = RunningAttemptPage(page_content)
+    assert parser.id == task_metadata['attempt_id']
+    assert parser.prefix == task_metadata['prefix']
+    assert parser.all_questions == set(task_metadata['questions'])
