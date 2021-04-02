@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.0 (2021-04-02)
+### Feature
+* **moodle-api:** Parser for all courses page ([`f5c35c9`](https://github.com/alekseik1/moodle-breaker/commit/f5c35c9a4928b367ae6f43a9f59b110f20ce8343))
+* **moodle-api:** Getter for page with all courses ([`8835eca`](https://github.com/alekseik1/moodle-breaker/commit/8835ecabdf5e007c35d338da07c8cc3252a1b7d6))
+
+### Fix
+* **radio-parser:** Fix new crashing tasks ([`6e12072`](https://github.com/alekseik1/moodle-breaker/commit/6e12072291d20aa5ce9ca1602f972842a9060ba7))
+
 ## v1.3.0 (2021-03-08)
 ### Feature
 * Delete user command ([`2af2ce2`](https://github.com/alekseik1/moodle-breaker/commit/2af2ce2cd6937d83ea57dcdb48b52fadb84811ed))
