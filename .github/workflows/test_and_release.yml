@@ -20,6 +20,9 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: test
         run: pytest -vv -s
+        env:
+          MOODLE_TEST_LOGIN: ${{secrets.MOODLE_TEST_LOGIN}}
+          MOODLE_TEST_PASSWORD: ${{secrets.MOODLE_TEST_PASSWORD}}
   release:
     name: prepare and release new version on GitHub
     runs-on: ubuntu-latest

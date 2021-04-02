@@ -38,6 +38,11 @@ class MoodleAPI:
             self.auth()
         yield self._session
 
+    def get_my_courses(self):
+        logger.info(f'get my courses for user {self.login}')
+        with self.session() as session:
+            return session.get('https://moodle.phystech.edu/grade/report/overview/index.php')
+
     def get_summary_page(self, cmid: str) -> requests.Response:
         logger.info(f'cmid={cmid}')
         with self.session() as s:
