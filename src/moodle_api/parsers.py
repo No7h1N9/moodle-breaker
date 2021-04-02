@@ -64,23 +64,51 @@ def parse_plain_text_answers(soup) -> dict:
     return correct_answers
 
 
+def remove_duplicates(l):
+    prev = None
+    res = []
+    for elem in l:
+        if elem != prev:
+            res.append(elem)
+        prev = elem
+    return res
+
+
+def remove_last_digit(string):
+    return re.search(r'(.*)[^\d]', string).group(0)
+
+
+def remove_prefix(string):
+    return string.split(':')[1]
+
+
 def parse_radio_button_answers(soup):
-    correct_answers = {}
-    for all_ans_tag in soup.find_all('div', {'class': 'answer'}):
-        # Правильный ответ идет прямо в следующем теге
-        if not all_ans_tag.nextSibling:
-            continue
-        for ans_candidate in all_ans_tag.nextSibling.contents:
+    correct_answers = []
+    radio_tags = soup.find_all('input', {'type': 'radio', 'id': re.compile(r'q\d+:\d.*')})
+    if not radio_tags:
+        return {}
+    questions = [remove_last_digit(x['id']) for x in radio_tags]
+    # remove duplicates
+    questions = remove_duplicates(questions)
+    i = 0
+    for tags in soup.find_all('div', {'class': 'outcome'}):
+        for ans_candidate in tags.contents:
             if _contains_answer(ans_candidate):
                 correct_answer = ans_candidate.split(': ')[1]
-                # Теперь надо найти тег, который соответствует этому ответу. Боже, дай мне силы
-                for label in all_ans_tag.find_all('label'):
-                    if label.text == correct_answer:
-                        correct_answer = label.parent.next['value']
-                        break
-                correct_answers.update({
-                    all_ans_tag.next.find('input')['name'].split(':')[1]: correct_answer})
-    return correct_answers
+                correct_answers.append([questions[i].split(':')[1], correct_answer])
+                i += 1
+    if not correct_answers:
+        return {}
+    # Build mapper
+    i = 0
+    for tag in radio_tags:
+        if tag.next.text == correct_answers[i][1] and remove_prefix(remove_last_digit(tag['id'])) == correct_answers[i][0]:
+            correct_answers[i][1] = tag['value']
+            i += 1
+        if i == len(correct_answers):
+            # no need for further processing
+            break
+    return dict(correct_answers)
 
 
 def parse_picker_answers(soup):
