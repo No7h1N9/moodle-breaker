@@ -38,19 +38,19 @@ class CourseRecordsParser(PageParserBase):
         return rv
 
 
-class TaskRecordParser(PageParserBase):
+class TaskParserMixin:
     @staticmethod
-    def _get_id(task_tag: bs4.Tag) -> str:
-        task_url = task_tag["href"]
+    def _get_id(task_url: str) -> str:
         return parse_qs(urlparse(task_url).query)["id"][0]
 
     @staticmethod
-    def _get_type(task_tag: bs4.Tag) -> TaskTypes:
-        task_url = task_tag["href"]
+    def _get_type(task_url: str) -> TaskTypes:
         for type_candidate in TaskTypes:
             if type_candidate.value in task_url:
                 return type_candidate
 
+
+class TaskRecordParser(PageParserBase, TaskParserMixin):
     @staticmethod
     def _get_percentage(task_tag: bs4.Tag) -> float:
         tr = task_tag.parent
@@ -68,8 +68,8 @@ class TaskRecordParser(PageParserBase):
     def parse(self) -> List["TaskRecord"]:
         rv = []
         for task_tag in self.soup.find_all("a", {"class": "gradeitemheader"}):
-            task_id = self._get_id(task_tag)
-            task_type = self._get_type(task_tag)
+            task_id = self._get_id(task_tag["href"])
+            task_type = self._get_type(task_tag["href"])
             task_percentage = self._get_percentage(task_tag)
             rv.append(
                 TaskRecord(type=task_type, id=task_id, percentage=task_percentage)
