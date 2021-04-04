@@ -5,8 +5,10 @@ from loguru import logger
 
 from moodle_api.network import MoodleAPI
 from moodle_api.page_parsers import TaskSummaryParser
-from moodle_api.pages import (FinishedAttemptPage, RunningAttemptPage,
-                              SummaryPage)
+from moodle_api.pages import (
+    FinishedAttemptPage,
+    RunningAttemptPage,
+)
 from moodle_api.parsers import TaskMetadata
 
 
