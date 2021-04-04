@@ -1,6 +1,7 @@
 import re
 from enum import Enum
 from typing import List, Union
+from urllib.parse import parse_qs, urlparse
 
 import bs4
 from pydantic import BaseModel
@@ -84,7 +85,7 @@ class TaskRecord(TaskBase, HtmlParsable):
     @staticmethod
     def _get_id(task_tag: bs4.Tag) -> str:
         task_url = task_tag["href"]
-        return re.search(r"\Wid=(\d+)", task_url).groups()[0]
+        return parse_qs(urlparse(task_url).query)["id"][0]
 
     @staticmethod
     def _get_type(task_tag: bs4.Tag) -> TaskTypes:
