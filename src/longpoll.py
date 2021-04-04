@@ -4,6 +4,7 @@ from time import sleep
 from typing import List
 
 import vk_api
+from loguru import logger
 from requests.exceptions import ReadTimeout
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 from vk_api.utils import get_random_id
@@ -13,7 +14,6 @@ from models import DatabaseManager
 from moodle_api.breaker import break_task
 from moodle_api.network import MoodleAPI
 from moodle_api.parsers import parse_cmid
-from utils import logger
 
 manager = DatabaseManager(os.environ.get("DATABASE_URL"))
 vk_session = vk_api.VkApi(token=os.environ.get("ACCESS_TOKEN"))

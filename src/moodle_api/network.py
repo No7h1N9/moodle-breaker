@@ -4,8 +4,7 @@ from typing import Tuple
 
 import bs4
 import requests
-
-from src.utils import logger
+from loguru import logger
 
 
 class MoodleAPI:

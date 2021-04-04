@@ -7,9 +7,10 @@ import re
 from urllib.parse import parse_qs, urlparse
 
 import bs4
+from loguru import logger
 
 from src.moodle_api.parsers import parse_answers
-from src.utils import logger, to_float
+from src.utils import to_float
 
 
 class Page:
