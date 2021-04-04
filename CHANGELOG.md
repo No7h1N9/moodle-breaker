@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.1 (2021-04-04)
+### Fix
+* **sqlalchemy:** Replace heroku url ([`14f625e`](https://github.com/alekseik1/moodle-breaker/commit/14f625ec72744a8d669439540cb05c2130a009bc))
+
 ## v2.0.0 (2021-04-04)
 ### Breaking
 * need to bump new version since it wasn't done previously  ([`524cb21`](https://github.com/alekseik1/moodle-breaker/commit/524cb21a8e32fec3429a629d3e4e6981c7e01835))
