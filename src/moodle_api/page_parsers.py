@@ -5,18 +5,13 @@ from urllib.parse import parse_qs, urlparse
 import bs4
 from loguru import logger
 
-from src.moodle_api.models import (
-    CourseRecord,
-    TaskAttempt,
-    TaskRecord,
-    TaskSummaryPage,
-    TaskTypes,
-)
+from src.moodle_api.models import (CourseRecord, TaskAttempt, TaskRecord,
+                                   TaskSummaryPage, TaskTypes)
 from src.utils import to_float, to_int
 
 
 class PageParserBase:
-    def __init__(self, page_url: str, page_content: bs4.BeautifulSoup):
+    def __init__(self, page_url: str, page_content: bytes):
         self.page_url = page_url
         self.soup, self.content = (
             bs4.BeautifulSoup(page_content, features="lxml"),
