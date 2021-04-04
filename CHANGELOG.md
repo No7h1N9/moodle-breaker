@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.0 (2021-04-04)
+### Breaking
+* need to bump new version since it wasn't done previously  ([`524cb21`](https://github.com/alekseik1/moodle-breaker/commit/524cb21a8e32fec3429a629d3e4e6981c7e01835))
+
 ## v1.5.0 (2021-04-04)
 ### Feature
 * **crash:** Add simple crash dump email ([`b5f7c13`](https://github.com/alekseik1/moodle-breaker/commit/b5f7c132ac93dd6bf362afc26c2180bed1b6ac80))
