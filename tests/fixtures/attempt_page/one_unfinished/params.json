@@ -1,7 +1,14 @@
 {
-  "sesskey": "iPbyPmgAWl",
-  "cmid": "42502",
   "url": "http://moodle.phystech.edu/mod/quiz/view.php?id=42502",
-  "best_own_url": null,
-  "best_attempt_id": null
+  "payload": {
+    "attempts": [
+      {"number": 1, "type": "quiz", "id": 42502, "status": "В процессе", "attempt_id": null, "score": null, "mark": null, "MAX_MARK": 10.0}
+    ],
+    "best_own_url": null,
+    "best_attempt_id": null
+  },
+  "network": {
+    "sesskey": "iPbyPmgAWl",
+    "cmid": "42502"
+  }
 }

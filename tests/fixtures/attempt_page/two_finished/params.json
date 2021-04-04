@@ -1,7 +1,15 @@
 {
-  "cmid": "28557",
-  "sesskey": "su2AAGAxZ5",
   "url": "http://moodle.phystech.edu/mod/quiz/view.php?id=28557",
-  "best_own_url": "http://moodle.phystech.edu/mod/quiz/review.php?attempt=550179&cmid=28557",
-  "best_attempt_id": "550179"
+  "payload": {
+    "attempts": [
+      {"number": 1, "type": "quiz", "id": 28557, "status": "ЗавершенныеОтправлено Пятница, 20 марта 2020, 17:23", "attempt_id": "550174", "score": 2.5, "mark": 5.0, "MAX_MARK": 10.0},
+      {"number": 2, "type": "quiz", "id": 28557, "status": "ЗавершенныеОтправлено Пятница, 20 марта 2020, 17:24", "attempt_id": "550179", "score": 5.0, "mark": 10.0, "MAX_MARK": 10.0}
+    ],
+    "best_own_url": "http://moodle.phystech.edu/mod/quiz/review.php?attempt=550179&cmid=28557",
+    "best_attempt_id": "550179"
+  },
+  "network": {
+    "cmid": "28557",
+    "sesskey": "su2AAGAxZ5"
+  }
 }

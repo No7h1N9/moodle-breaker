@@ -1,0 +1,21 @@
+{
+  "url": "http://moodle.phystech.edu/mod/quiz/view.php?id=28557",
+  "payload": {
+    "attempts": [
+      {"type": "quiz", "id": 28557, "number": 1, "status": "ЗавершенныеОтправлено Пятница, 12 февраля 2021, 14:48", "attempt_id": 832790, "score": 3.0, "mark": 3.75, "MAX_MARK": 10.0},
+      {"type": "quiz", "id": 28557, "number": 2, "status": "ЗавершенныеОтправлено Пятница, 12 февраля 2021, 14:49", "attempt_id": 832797, "score": 8.0, "mark": 10.0, "MAX_MARK": 10.0},
+      {"type": "quiz", "id": 28557, "number": 3, "status": "ЗавершенныеОтправлено Воскресенье, 4 апреля 2021, 15:03", "attempt_id": 885615, "score": 8.0, "mark": 10.0, "MAX_MARK": 10.0},
+      {"type": "quiz", "id": 28557, "number": 4, "status": "ЗавершенныеОтправлено Воскресенье, 4 апреля 2021, 15:04", "attempt_id": 885616, "score": 8.0, "mark": 10.0, "MAX_MARK": 10.0},
+      {"type": "quiz", "id": 28557, "number": 5, "status": "ЗавершенныеОтправлено Воскресенье, 4 апреля 2021, 15:06", "attempt_id": 885617, "score": 8.0, "mark": 10.0, "MAX_MARK": 10.0},
+      {"type": "quiz", "id": 28557, "number": 6, "status": "ЗавершенныеОтправлено Воскресенье, 4 апреля 2021, 15:09", "attempt_id": 885619, "score": 8.0, "mark": 10.0, "MAX_MARK": 10.0},
+      {"type": "quiz", "id": 28557, "number": 7, "status": "ЗавершенныеОтправлено Воскресенье, 4 апреля 2021, 15:14", "attempt_id": 885623, "score": 8.0, "mark": 10.0, "MAX_MARK": 10.0},
+      {"type": "quiz", "id": 28557, "number": 8, "status": "В процессе", "attempt_id": null, "score": -1.0, "mark": -1.0, "MAX_MARK": 10.0}
+    ],
+    "best_own_url": "http://moodle.phystech.edu/mod/quiz/review.php?attempt=550179&cmid=28557",
+    "best_attempt_id": "550179"
+  },
+  "network": {
+    "cmid": "36259",
+    "sesskey": "LHrb5ORmk4"
+  }
+}

@@ -1,11 +1,22 @@
-from typing import Any, Tuple
 import json
+from typing import Any, Tuple
+
+from src.moodle_api.models import TaskAttempt
 
 
-def load_fixture(directory) -> Tuple[str, Any]:
-    with open(directory / 'index.htm') as page:
-        with open(directory / 'params.json') as params:
-            return page.read(), json.loads(params.read())
+def load_fixture(directory) -> Tuple[str, str, Any]:
+    with open(directory / "index.htm") as page:
+        with open(directory / "params.json") as params:
+            params = json.loads(params.read())
+            return page.read(), params["url"], params
+
+
+def load_summary_fixture(directory) -> Tuple[str, str, Any]:
+    page, url, params = load_fixture(directory)
+    params["payload"]["attempts"] = [
+        TaskAttempt(**value) for value in params["payload"]["attempts"]
+    ]
+    return page, url, params
 
 
 def case_finished_task_picker_only(picker_only_directory):
@@ -25,7 +36,7 @@ def case_finished_task_checkbox_only(checkbox_only_directory):
 
 
 def case_attempt_page_various_attempt_pages(attempt_page_directory):
-    return load_fixture(attempt_page_directory)
+    return load_summary_fixture(attempt_page_directory)
 
 
 def case_running_attempt_various_types(running_attempt_directory):

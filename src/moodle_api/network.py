@@ -1,9 +1,10 @@
-import requests
-import bs4
-from contextlib import contextmanager
-from src.utils import logger
-from typing import Tuple
 import re
+from contextlib import contextmanager
+from typing import Tuple
+
+import bs4
+import requests
+from loguru import logger
 
 
 class MoodleAPI:
@@ -15,22 +16,27 @@ class MoodleAPI:
     def auth(self):
         logger.info(f'login="{self.login}"; token={self._login_token}')
         self._session.post(
-            'http://moodle.phystech.edu/login/index.php',
-            {'username': self.login, 'password': self.password,
-             'anchor': '', 'logintoken': self._login_token})
+            "http://moodle.phystech.edu/login/index.php",
+            {
+                "username": self.login,
+                "password": self.password,
+                "anchor": "",
+                "logintoken": self._login_token,
+            },
+        )
 
     def _get_login_token(self) -> str:
         soup = bs4.BeautifulSoup(
-            self._session.get('http://moodle.phystech.edu/my/').content,
-            features='lxml')
-        self._login_token = soup.find('input', {'name': 'logintoken'})['value']
+            self._session.get("http://moodle.phystech.edu/my/").content, features="lxml"
+        )
+        self._login_token = soup.find("input", {"name": "logintoken"})["value"]
         return self._login_token
 
     @property
     def is_authorized(self) -> bool:
-        response = self._session.get('http://moodle.phystech.edu/my/')
-        parsed = bs4.BeautifulSoup(response.content, features='lxml')
-        return 'Вход' not in str(parsed.title)
+        response = self._session.get("http://moodle.phystech.edu/my/")
+        parsed = bs4.BeautifulSoup(response.content, features="lxml")
+        return "Вход" not in str(parsed.title)
 
     @contextmanager
     def session(self) -> requests.Session:
@@ -39,33 +45,40 @@ class MoodleAPI:
         yield self._session
 
     def get_my_courses(self):
-        logger.info(f'get my courses for user {self.login}')
+        logger.info(f"get my courses for user {self.login}")
         with self.session() as session:
-            return session.get('https://moodle.phystech.edu/grade/report/overview/index.php')
+            return session.get(
+                "https://moodle.phystech.edu/grade/report/overview/index.php"
+            )
 
     def get_summary_page(self, cmid: str) -> requests.Response:
-        logger.info(f'cmid={cmid}')
+        logger.info(f"cmid={cmid}")
         with self.session() as s:
-            return s.get(f'http://moodle.phystech.edu/mod/quiz/view.php?id={cmid}')
+            return s.get(f"http://moodle.phystech.edu/mod/quiz/view.php?id={cmid}")
 
-    def get_finished_attempt_page(self, cmid: str, attempt_id: str) -> requests.Response:
-        logger.info(f'cmid={cmid}; attempt_id={attempt_id}')
+    def get_finished_attempt_page(
+        self, cmid: str, attempt_id: str
+    ) -> requests.Response:
+        logger.info(f"cmid={cmid}; attempt_id={attempt_id}")
         with self.session() as s:
-            return s.get(f'http://moodle.phystech.edu/mod/quiz/review.php?attempt={attempt_id}&cmid={cmid}')
+            return s.get(
+                f"http://moodle.phystech.edu/mod/quiz/review.php?attempt={attempt_id}&cmid={cmid}"
+            )
 
     def start_attempt(self, cmid: str, sesskey: str) -> requests.Response:
-        logger.info(f'cmid={cmid}')
+        logger.info(f"cmid={cmid}")
         with self.session() as s:
             response = s.post(
-                'http://moodle.phystech.edu/mod/quiz/startattempt.php',
-                {'cmid': cmid, 'sesskey': sesskey}
+                "http://moodle.phystech.edu/mod/quiz/startattempt.php",
+                {"cmid": cmid, "sesskey": sesskey},
             )
             if response.status_code == 404:
-                raise ValueError('Cannot start attempt. Does task have limits?')
+                raise ValueError("Cannot start attempt. Does task have limits?")
             return response
 
-    def upload_answers(self, cmid: str, sesskey: str, attempt_id: str,
-                       prefix: str, answers: dict) -> None:
+    def upload_answers(
+        self, cmid: str, sesskey: str, attempt_id: str, prefix: str, answers: dict
+    ) -> None:
         """
 
         :param sesskey:
@@ -74,18 +87,24 @@ class MoodleAPI:
         :param answers: {'1_sub6_answer': 'Hell', ...}
         """
         with self.session() as s:
-            logger.info(f'starting building request')
-            data = {'sesskey': sesskey,
-                    'attempt': attempt_id,
-                    # Параметры с мудла, без них не работает
-                    'nextpage': -1,
-                    'next': 'Закончить попытку...', 'scrollpos': '', 'thispage': 0, 'timeup': 0, 'slots': 1}
+            logger.info(f"starting building request")
+            data = {
+                "sesskey": sesskey,
+                "attempt": attempt_id,
+                # Параметры с мудла, без них не работает
+                "nextpage": -1,
+                "next": "Закончить попытку...",
+                "scrollpos": "",
+                "thispage": 0,
+                "timeup": 0,
+                "slots": 1,
+            }
             # HACK: без этих странных полем мудл не съедает ответы
-            slots = set([x.split('_')[0] for x in answers.keys()])
+            slots = set([x.split("_")[0] for x in answers.keys()])
             for number in slots:
-                data.update({'{}:{}_:flagged'.format(prefix, number): 0})
-                data.update({'{}:{}_:sequencecheck'.format(prefix, number): 1})
-            '''
+                data.update({"{}:{}_:flagged".format(prefix, number): 0})
+                data.update({"{}:{}_:sequencecheck".format(prefix, number): 1})
+            """
             for key in answers.keys():
                 # TODO: Перенести это в парсер
                 # Ищем подходящий ответ. Коварный мудл меняет ключи, но я тоже не дурак!
@@ -97,22 +116,27 @@ class MoodleAPI:
                         logger.debug(f'mapping keys: {key1} -> {key}')
                         correct_key = key1
                         break
-            '''
+            """
             for form, ans in answers.items():
-                data.update({f'{prefix}:{form}': ans})
-            logger.info(f'data is: {data}')
+                data.update({f"{prefix}:{form}": ans})
+            logger.info(f"data is: {data}")
 
             response = s.post(
-                'http://moodle.phystech.edu/mod/quiz/processattempt.php?cmid={}'.format(cmid),
-                data
+                "http://moodle.phystech.edu/mod/quiz/processattempt.php?cmid={}".format(
+                    cmid
+                ),
+                data,
             )
 
     def finish_attempt(self, cmid: str, sesskey: str, attempt_id: str) -> None:
-        logger.info(f'cmid={cmid}; sesskey={sesskey}; attempt_id={attempt_id}')
+        logger.info(f"cmid={cmid}; sesskey={sesskey}; attempt_id={attempt_id}")
         with self.session() as s:
             s.post(
-                'http://moodle.phystech.edu/mod/quiz/processattempt.php',
-                {'attempt': attempt_id, 'finishattempt': 1,
-                 'cmid': cmid, 'sesskey': sesskey}
+                "http://moodle.phystech.edu/mod/quiz/processattempt.php",
+                {
+                    "attempt": attempt_id,
+                    "finishattempt": 1,
+                    "cmid": cmid,
+                    "sesskey": sesskey,
+                },
             )
-

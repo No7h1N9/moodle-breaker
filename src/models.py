@@ -1,15 +1,16 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, create_engine
 from contextlib import contextmanager
-from sqlalchemy.orm import Session
+
+from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     login = Column(String)
     password = Column(String)
@@ -47,7 +48,9 @@ class DatabaseManager:
         self.session.add(User(id=id, login=login, password=password))
         self.session.commit()
 
-    def update_user(self, id: int, new_login: str=None, new_password: str=None) -> bool:
+    def update_user(
+        self, id: int, new_login: str = None, new_password: str = None
+    ) -> bool:
         user = self.session.query(User).filter_by(id=id).first()
         if not user:
             return False
@@ -60,4 +63,4 @@ class DatabaseManager:
             self.session.delete(User(id=id))
             self.session.commit()
         except Exception as e:
-            print(f'Failed to delete user {id} with error {e}')
+            print(f"Failed to delete user {id} with error {e}")

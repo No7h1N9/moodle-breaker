@@ -1,0 +1,503 @@
+{
+  "url": "https://moodle.phystech.edu/course/user.php?mode=grade&id=256&user=9303",
+  "payload": {
+    "total_tasks": 99,
+    "parsed_tasks": [
+      {
+        "type": "quiz",
+        "id": 36242,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36256,
+        "percentage": 100.0
+      },
+      {
+        "type": "forum",
+        "id": 36257,
+        "percentage": 90.0
+      },
+      {
+        "type": "quiz",
+        "id": 48038,
+        "percentage": 84.8
+      },
+      {
+        "type": "quiz",
+        "id": 38304,
+        "percentage": 100.0
+      },
+      {
+        "type": "forum",
+        "id": 38305,
+        "percentage": 80.0
+      },
+      {
+        "type": "quiz",
+        "id": 36931,
+        "percentage": 91.1
+      },
+      {
+        "type": "quiz",
+        "id": 36241,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36260,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36261,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36271,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36270,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36259,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36253,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36258,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36255,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36934,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36899,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36900,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36376,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36352,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36358,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36377,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36378,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36379,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36381,
+        "percentage": 0.0
+      },
+      {
+        "type": "assign",
+        "id": 39455,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36147,
+        "percentage": 0.0
+      },
+      {
+        "type": "forum",
+        "id": 39894,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36159,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39605,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 39657,
+        "percentage": 0.0
+      },
+      {
+        "type": "forum",
+        "id": 39824,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 48551,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 35537,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 35573,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 35566,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 35568,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 35591,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 35594,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 35596,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 35597,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 35600,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36161,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36162,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36148,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36149,
+        "percentage": 100.0
+      },
+      {
+        "type": "quiz",
+        "id": 36151,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36150,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36152,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36154,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36153,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36156,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36157,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36155,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 36158,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39656,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39658,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 40112,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 40133,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39660,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39817,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 40113,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 40119,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 40120,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39604,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39655,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38117,
+        "percentage": 100.0
+      },
+      {
+        "type": "assign",
+        "id": 40709,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 48625,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39508,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39514,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39594,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39341,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39339,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 41236,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38111,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38113,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38112,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38115,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38116,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 41235,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38916,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39503,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38919,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38904,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38923,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38920,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 38922,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39368,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39275,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39359,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39237,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39232,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39235,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39236,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39366,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39367,
+        "percentage": 0.0
+      },
+      {
+        "type": "quiz",
+        "id": 39348,
+        "percentage": 0.0
+      }
+    ]
+  }
+}
