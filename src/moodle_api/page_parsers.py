@@ -12,6 +12,7 @@ from src.moodle_api.models import (
     TaskSummaryPage,
     TaskTypes,
 )
+from src.utils import to_float, to_int
 
 
 class PageParserBase:
@@ -115,11 +116,11 @@ class TaskSummaryParser(PageParserBase, TaskParserMixin):
                     mark = tag.find("td", {"class": f"c3"}).text.replace(",", ".")
                 rv.append(
                     TaskAttempt(
-                        id=task_id,
+                        id=to_int(task_id),
                         type=task_type,
-                        attempt_id=attempt_id,
-                        score=score,
-                        mark=mark,
+                        attempt_id=to_int(attempt_id),
+                        score=to_float(score),
+                        mark=to_float(mark),
                         status=status,
                     )
                 )
@@ -128,4 +129,4 @@ class TaskSummaryParser(PageParserBase, TaskParserMixin):
             logger.info(
                 "could not parse best own attempt. Proceeding as the first run..."
             )
-        return TaskSummaryPage(id=task_id, type=task_type, attempts=rv)
+        return TaskSummaryPage(id=to_int(task_id), type=task_type, attempts=rv)

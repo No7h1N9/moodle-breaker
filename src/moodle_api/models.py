@@ -51,5 +51,14 @@ class TaskAttempt(TaskBase):
 
 
 class TaskSummaryPage(TaskBase):
-    best_attempt: TaskAttempt = None
     attempts: List[TaskAttempt]
+
+    @property
+    def best_attempt(self) -> TaskAttempt:
+        curr_mark, curr_attempt = -1, None
+        for attempt in self.attempts:
+            if attempt.mark is None:
+                continue
+            if attempt.mark > curr_mark:
+                curr_attempt = attempt
+        return curr_attempt
