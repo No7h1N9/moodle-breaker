@@ -5,7 +5,8 @@ from loguru import logger
 
 from moodle_api.network import MoodleAPI
 from moodle_api.page_parsers import TaskSummaryParser
-from moodle_api.pages import FinishedAttemptPage, RunningAttemptPage, SummaryPage
+from moodle_api.pages import (FinishedAttemptPage, RunningAttemptPage,
+                              SummaryPage)
 from moodle_api.parsers import TaskMetadata
 
 
@@ -23,8 +24,10 @@ def run_empty_attempt(api: MoodleAPI, cmid: str) -> None:
     return
 
 
-def break_task(api: MoodleAPI, cmid: str) -> Tuple[dict, set]:
+def break_task(api: MoodleAPI, cmid: str) -> Tuple[dict, set, dict]:
+    crash_data = {}
     response = api.get_summary_page(cmid=cmid)
+    crash_data["first_attempt"] = (response.url, response.content)
     metadata = TaskMetadata(response.content)
     best_attempt = (
         TaskSummaryParser(page_url=response.url, page_content=response.content)
@@ -35,6 +38,7 @@ def break_task(api: MoodleAPI, cmid: str) -> Tuple[dict, set]:
         run_empty_attempt(api, cmid)
         # NOTE: do not repeat yourself
         response = api.get_summary_page(cmid=cmid)
+        crash_data["second_attempt"] = (response.url, response.content)
         metadata = TaskMetadata(response.content)
         best_attempt = (
             TaskSummaryParser(page_url=response.url, page_content=response.content)
@@ -48,6 +52,7 @@ def break_task(api: MoodleAPI, cmid: str) -> Tuple[dict, set]:
         .best_attempt
     )
     response = api.get_finished_attempt_page(cmid, best_attempt.attempt_id)
+    crash_data["finished_attempt_page"] = (response.url, response.content)
     answers = FinishedAttemptPage(response.content).parse_answers()
     logger.info(f"parsed answers for attempt {best_attempt}: {answers}")
 
@@ -56,15 +61,16 @@ def break_task(api: MoodleAPI, cmid: str) -> Tuple[dict, set]:
 
     logger.info(f"Starting new attempt...")
     response = api.start_attempt(cmid, metadata.sesskey)
+    crash_data["new_attempt"] = (response.url, response.content)
     attempt = RunningAttemptPage(response.content)
     missing_answers = attempt.all_questions.difference(set(answers.keys()))
     if missing_answers or not answers:
         logger.warning("missing answers: {}".format(", ".join(missing_answers)))
         logger.warning("could parse: {}".format(", ".join(answers)))
         logger.warning("Stopping breaking!")
-        return answers, missing_answers
+        return answers, missing_answers, crash_data
     logger.info(f"Uploading answers...")
     api.upload_answers(cmid, metadata.sesskey, attempt.id, attempt.prefix, answers)
     api.finish_attempt(cmid, metadata.sesskey, attempt.id)
     logger.info("Task is broken!")
-    return answers, missing_answers
+    return answers, missing_answers, crash_data

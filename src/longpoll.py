@@ -4,6 +4,7 @@ from time import sleep
 from typing import List
 
 import vk_api
+from dotenv import load_dotenv
 from loguru import logger
 from requests.exceptions import ReadTimeout
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
@@ -14,11 +15,16 @@ from models import DatabaseManager
 from moodle_api.breaker import break_task
 from moodle_api.network import MoodleAPI
 from moodle_api.parsers import parse_cmid
+from src.crash import send_crash_email
+
+load_dotenv()
 
 manager = DatabaseManager(os.environ.get("DATABASE_URL"))
 vk_session = vk_api.VkApi(token=os.environ.get("ACCESS_TOKEN"))
 longpoll = VkBotLongPoll(vk_session, os.environ.get("GROUP_ID"))
 vk = vk_session.get_api()
+
+ADMIN_ID = "92540660"
 
 
 def send_message(to_id, message: str) -> None:
@@ -38,6 +44,7 @@ def valid_credentials(login, password):
 
 
 def handle_message(event):
+    logger.info("new message")
     message_text, message_id = event.obj.text, event.obj.id
     user_id = int(event.obj.from_id)
     # Ad-hoc to forget user
@@ -79,12 +86,13 @@ def handle_message(event):
         if not api.is_authorized:
             # TODO: feature to change password
             send_message(user_id, MOODLE_DECLINED_LOGIN)
-        broken, unbroken = break_task(api, cmid)
+        broken, unbroken, crash_data = break_task(api, cmid)
         if not unbroken and broken:
             for _ in range(count - 1):
                 break_task(api, cmid)
             send_message(user_id, BREAKING_DONE)
         else:
+            send_crash_email(crash_data)
             send_message(user_id, FIELDS_ARE_MISSING)
 
 
