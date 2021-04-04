@@ -26,6 +26,18 @@ class PageParserBase:
         raise NotImplementedError()
 
 
+class TaskParserMixin:
+    @staticmethod
+    def _get_id(task_url: str) -> str:
+        return parse_qs(urlparse(task_url).query)["id"][0]
+
+    @staticmethod
+    def _get_type(task_url: str) -> TaskTypes:
+        for type_candidate in TaskTypes:
+            if type_candidate.value in task_url:
+                return type_candidate
+
+
 class CourseRecordsParser(PageParserBase):
     def parse(self) -> Union["CourseRecord", List["CourseRecord"]]:
         rv = []
@@ -43,18 +55,6 @@ class CourseRecordsParser(PageParserBase):
             mark = mark_tag.text.strip()
             rv.append(CourseRecord(name=course_name, course_id=course_id, mark=mark))
         return rv
-
-
-class TaskParserMixin:
-    @staticmethod
-    def _get_id(task_url: str) -> str:
-        return parse_qs(urlparse(task_url).query)["id"][0]
-
-    @staticmethod
-    def _get_type(task_url: str) -> TaskTypes:
-        for type_candidate in TaskTypes:
-            if type_candidate.value in task_url:
-                return type_candidate
 
 
 class TaskRecordParser(PageParserBase, TaskParserMixin):
