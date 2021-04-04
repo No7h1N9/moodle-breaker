@@ -1,12 +1,15 @@
 {
-  "Deutsch B1, 2. Semester": {
-    "name": "Deutsch B1, 2. Semester",
-    "course_id": "256",
-    "mark": "неуд (1)"
-  },
-  "Deutsch B1, 1.Semester": {
-    "name": "Deutsch B1, 1.Semester",
-    "course_id": "241",
-    "mark": "отл (9)"
-  }
+  "url": "https://moodle.phystech.edu/grade/report/overview/index.php",
+  "payload": [
+    {
+      "name": "Deutsch B1, 2. Semester",
+      "course_id": "256",
+      "mark": "неуд (1)"
+    },
+    {
+      "name": "Deutsch B1, 1.Semester",
+      "course_id": "241",
+      "mark": "отл (9)"
+    }
+  ]
 }
