@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v1.5.0 (2021-04-04)
+### Feature
+* **crash:** Add simple crash dump email ([`b5f7c13`](https://github.com/alekseik1/moodle-breaker/commit/b5f7c132ac93dd6bf362afc26c2180bed1b6ac80))
+* **logging:** Use Loguru for logging ([`882aa07`](https://github.com/alekseik1/moodle-breaker/commit/882aa077595070c78486fbe6c31282d988aa3bcc))
+* **TaskSummaryPage:** Introduce summary page parser ([`2ad137f`](https://github.com/alekseik1/moodle-breaker/commit/2ad137fc7cfdeb9723743fd917c52df23484f294))
+* **all-tasks-parser:** Initial support for parsing all tasks ([`4f5e313`](https://github.com/alekseik1/moodle-breaker/commit/4f5e313c54de2ca4e36e9d343bcd050da4e5d5a4))
+
+### Fix
+* **PageParser:** Incorrect type for `page_content` ([`072f4da`](https://github.com/alekseik1/moodle-breaker/commit/072f4daa63ed0393fe8f1dfeb141f7514b263c93))
+* **None:** Support for None values in parsers ([`8dda000`](https://github.com/alekseik1/moodle-breaker/commit/8dda00090df35e22d76cef3ed1b0b58f6183c41f))
+
+### Documentation
+* Some docs ([`d6da6b4`](https://github.com/alekseik1/moodle-breaker/commit/d6da6b445440b771ecd7bc2e66f8a4e76b2b1a43))
+
 ## v1.4.0 (2021-04-02)
 ### Feature
 * **moodle-api:** Parser for all courses page ([`f5c35c9`](https://github.com/alekseik1/moodle-breaker/commit/f5c35c9a4928b367ae6f43a9f59b110f20ce8343))
