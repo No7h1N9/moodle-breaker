@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 from pydantic import BaseModel
 
@@ -39,3 +40,16 @@ class TaskRecord(TaskBase):
     """
 
     percentage: float = 0.0
+
+
+class TaskAttempt(TaskBase):
+    status: str
+    attempt_id: str = None
+    score: float = None
+    mark: float = None
+    MAX_MARK: float = 10.0
+
+
+class TaskSummaryPage(TaskBase):
+    best_attempt: TaskAttempt = None
+    attempts: List[TaskAttempt]
