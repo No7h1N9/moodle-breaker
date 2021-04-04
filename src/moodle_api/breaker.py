@@ -2,8 +2,8 @@ import time
 from typing import Tuple
 
 from moodle_api.network import MoodleAPI
-from moodle_api.pages import (FinishedAttemptPage, RunningAttemptPage,
-                              SummaryPage)
+from moodle_api.page_parsers import TaskSummaryParser
+from moodle_api.pages import FinishedAttemptPage, RunningAttemptPage, SummaryPage
 from moodle_api.parsers import TaskMetadata
 from utils import logger
 
@@ -25,16 +25,28 @@ def run_empty_attempt(api: MoodleAPI, cmid: str) -> None:
 def break_task(api: MoodleAPI, cmid: str) -> Tuple[dict, set]:
     response = api.get_summary_page(cmid=cmid)
     metadata = TaskMetadata(response.content)
-    best_attempt = SummaryPage(response.content).best_attempt_id()
+    best_attempt = (
+        TaskSummaryParser(page_url=response.url, page_content=response.content)
+        .parse()
+        .best_attempt
+    )
     if not best_attempt:
         run_empty_attempt(api, cmid)
         # NOTE: do not repeat yourself
         response = api.get_summary_page(cmid=cmid)
         metadata = TaskMetadata(response.content)
-        best_attempt = SummaryPage(response.content).best_attempt_id()
+        best_attempt = (
+            TaskSummaryParser(page_url=response.url, page_content=response.content)
+            .parse()
+            .best_attempt
+        )
     logger.info(f"Found best attempt: {best_attempt}")
-    best_attempt = SummaryPage(response.content).best_attempt_id()
-    response = api.get_finished_attempt_page(cmid, best_attempt)
+    best_attempt = (
+        TaskSummaryParser(page_url=response.url, page_content=response.content)
+        .parse()
+        .best_attempt
+    )
+    response = api.get_finished_attempt_page(cmid, best_attempt.attempt_id)
     answers = FinishedAttemptPage(response.content).parse_answers()
     logger.info(f"parsed answers for attempt {best_attempt}: {answers}")
 
