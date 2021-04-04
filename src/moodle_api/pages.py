@@ -2,7 +2,6 @@ import re
 from urllib.parse import parse_qs, urlparse
 import bs4
 from src.utils import to_float, logger
-from src.moodle_api.models import CourseRecord
 from src.moodle_api.parsers import parse_answers
 
 
@@ -10,20 +9,6 @@ class Page:
     def __init__(self, page_content: bytes):
         self.soup = bs4.BeautifulSoup(page_content, features='lxml')
         self.content = page_content
-
-
-class AllCoursesPage(Page):
-    def all_courses(self):
-        rv = {}
-        raw_courses = self.soup.find('table', {'id': 'overview-grade'}).find('tbody').\
-            find_all('tr', {'class': lambda x: x != "emptyrow"})
-        for row in raw_courses:
-            link_tag, mark_tag, _ = list(row.children)
-            course_name = link_tag.find('a').text.strip()
-            course_id = re.search(r'id=(\d+)', link_tag.find('a')['href'].strip()).groups()[0]
-            mark = mark_tag.text.strip()
-            rv[course_name] = CourseRecord(name=course_name, course_id=course_id, mark=mark)
-        return rv
 
 
 class SummaryPage(Page):

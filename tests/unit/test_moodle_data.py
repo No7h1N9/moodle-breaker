@@ -1,12 +1,11 @@
 from pytest_cases import parametrize_with_cases
-from src.moodle_api.pages import AllCoursesPage
-from src.moodle_api.models import TaskRecord
+from src.moodle_api.models import TaskRecord, CourseRecord
 
 
 @parametrize_with_cases('page_content, expected_data', prefix='case_all_courses_')
 def test_all_courses_page_is_parsed_correctly(page_content, expected_data):
-    parser = AllCoursesPage(page_content)
-    assert parser.all_courses() == expected_data
+    records = CourseRecord.from_content(page_content)
+    assert records == list(expected_data.values())
 
 
 @parametrize_with_cases('page_content, expected_data', prefix='case_all_tasks_for_course_')
