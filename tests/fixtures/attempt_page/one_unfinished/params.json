@@ -2,7 +2,7 @@
   "url": "http://moodle.phystech.edu/mod/quiz/view.php?id=42502",
   "payload": {
     "attempts": [
-      {"type": "quiz", "id": 42502, "status": "В процессе", "attempt_id": null, "score": null, "mark": null, "MAX_MARK": 10.0}
+      {"number": 1, "type": "quiz", "id": 42502, "status": "В процессе", "attempt_id": null, "score": null, "mark": null, "MAX_MARK": 10.0}
     ],
     "best_own_url": null,
     "best_attempt_id": null

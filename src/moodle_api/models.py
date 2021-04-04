@@ -43,8 +43,9 @@ class TaskRecord(TaskBase):
 
 
 class TaskAttempt(TaskBase):
+    number: int
     status: str
-    attempt_id: str = None
+    attempt_id: int = None
     score: float = None
     mark: float = None
     MAX_MARK: float = 10.0

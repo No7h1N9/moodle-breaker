@@ -97,6 +97,7 @@ class TaskSummaryParser(PageParserBase, TaskParserMixin):
             # Если всего 4 колонки - то это статус, балл, оценка и урл
             for tag in all_attempts:
                 score, mark = None, None
+                order_num = tag.find("td", {"class": "c0"}).text
                 status = tag.find("td", {"class": f"c1"}).text
                 _fail_safe = tag.find("td", {"class": f"c{total_cols}"}).a
                 if _fail_safe is None:
@@ -111,9 +112,10 @@ class TaskSummaryParser(PageParserBase, TaskParserMixin):
                     mark = tag.find("td", {"class": f"c3"}).text.replace(",", ".")
                 rv.append(
                     TaskAttempt(
-                        id=to_int(task_id),
+                        number=order_num,
+                        id=task_id,
                         type=task_type,
-                        attempt_id=to_int(attempt_id),
+                        attempt_id=attempt_id,
                         score=to_float(score),
                         mark=to_float(mark),
                         status=status,
