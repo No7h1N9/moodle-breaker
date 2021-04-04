@@ -19,7 +19,9 @@ from src.crash import send_crash_email
 
 load_dotenv()
 
-manager = DatabaseManager(os.environ.get("DATABASE_URL"))
+manager = DatabaseManager(
+    os.environ.get("DATABASE_URL").replace("postgres://", "postgresql://")
+)
 vk_session = vk_api.VkApi(token=os.environ.get("ACCESS_TOKEN"))
 longpoll = VkBotLongPoll(vk_session, os.environ.get("GROUP_ID"))
 vk = vk_session.get_api()
