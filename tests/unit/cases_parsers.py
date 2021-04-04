@@ -1,10 +1,10 @@
-from typing import Any, Tuple
 import json
+from typing import Any, Tuple
 
 
 def load_fixture(directory) -> Tuple[str, Any]:
-    with open(directory / 'index.htm') as page:
-        with open(directory / 'params.json') as params:
+    with open(directory / "index.htm") as page:
+        with open(directory / "params.json") as params:
             return page.read(), json.loads(params.read())
 
 
