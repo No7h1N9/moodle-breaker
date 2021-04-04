@@ -4,6 +4,7 @@ black
 isort
 docformatter
 lxml
+loguru
 python-dotenv
 sqlalchemy
 psycopg2-binary

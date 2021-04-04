@@ -1,6 +1,8 @@
 {
-  "sesskey": "0oOdoy9ogz",
-  "cmid": "42089",
+  "network": {
+    "sesskey": "0oOdoy9ogz",
+    "cmid": "42089"
+  },
   "url": "http://moodle.phystech.edu/mod/quiz/review.php?attempt=643870&cmid=42089",
   "attempt_id": "643870",
   "prefix": "q652071",
