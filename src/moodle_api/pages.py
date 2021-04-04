@@ -1,3 +1,8 @@
+"""Здесь лежат страницы с методами для их парсинга.
+
+Deprecated API, everything from here should be moved to Pydantic models
+in `models.py`
+"""
 import re
 from urllib.parse import parse_qs, urlparse
 

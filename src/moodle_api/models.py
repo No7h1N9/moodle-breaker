@@ -7,14 +7,28 @@ from pydantic import BaseModel
 
 
 class HtmlParsable:
+    """Mixin for any class representing HTML page."""
+
     @classmethod
     def from_content(
         cls, page_content: bytes
     ) -> Union["HtmlParsable", List["HtmlParsable"]]:
+        """Распарсить загруженную страницу в объект класса.
+
+        Должно быть переопределено в каждом наследнике.
+
+        :param page_content: контент страницы
+        :return: объект или список объектов по этому контенту
+        """
         raise NotImplementedError()
 
 
 class CourseRecord(BaseModel, HtmlParsable):
+    """Запись о каждом курсе на странице с оценками.
+
+    Moodle page: "Главная" -> "Оценки"
+    """
+
     name: str
     course_id: str
     mark: str
@@ -42,17 +56,28 @@ class CourseRecord(BaseModel, HtmlParsable):
 
 
 class TaskTypes(Enum):
+    """Известные типы заданий."""
+
+    # Красная иконка, BREAKABLE
     QUIZ = "quiz"
+    # Ответ писать на форуме. NOT BREAKABLE по природе
     FORUM = "forum"
+    # Ответ в развернутой форме. NOT BREAKABLE по природе
     WRITING = "assign"
 
 
 class TaskBase(BaseModel):
+    """Базовая инфа о задании: тип и id."""
+
     type: TaskTypes
     id: int
 
 
 class TaskRecord(TaskBase, HtmlParsable):
+    """Запись о задании в большой странице с оценками.
+
+    Moodle page: "Главная" -> "Оценки" -> (выбрать любой курс)
+    """
 
     percentage: float = 0.0
 
