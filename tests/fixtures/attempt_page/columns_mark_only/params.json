@@ -1,0 +1,33 @@
+{
+  "url": "https://moodle.phystech.edu/mod/quiz/view.php?id=35568",
+  "payload": {
+    "attempts": [
+      {
+        "number": 1,
+        "type": "quiz",
+        "id": 35568,
+        "status": "ЗавершенныеОтправлено Пятница, 2 апреля 2021, 18:07",
+        "attempt_id": "884303",
+        "score": null,
+        "mark": 0.0,
+        "MAX_MARK": 10.0
+      },
+      {
+        "number": 2,
+        "type": "quiz",
+        "id": 35568,
+        "status": "ЗавершенныеОтправлено Пятница, 2 апреля 2021, 18:07",
+        "attempt_id": "884304",
+        "score": null,
+        "mark": 10.0,
+        "MAX_MARK": 10.0
+      }
+    ],
+    "best_own_url": "https://moodle.phystech.edu/mod/quiz/review.php?attempt=884304&cmid=35568",
+    "best_attempt_id": "884304"
+  },
+  "network": {
+    "cmid": "35568",
+    "sesskey": "gcvfhVg4cD"
+  }
+}
