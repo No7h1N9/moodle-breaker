@@ -5,13 +5,8 @@ from urllib.parse import parse_qs, urlparse
 import bs4
 from loguru import logger
 
-from src.moodle_api.models import (
-    CourseRecord,
-    TaskAttempt,
-    TaskRecord,
-    TaskSummaryPage,
-    TaskTypes,
-)
+from src.moodle_api.models import (CourseRecord, TaskAttempt, TaskRecord,
+                                   TaskSummaryPage, TaskTypes)
 from src.utils import to_float, to_int
 
 
@@ -98,23 +93,49 @@ class TaskSummaryParser(PageParserBase, TaskParserMixin):
             ide = [item for i, item in enumerate(total_cols) if re.search(r"c\d", item)]
             if ide:
                 total_cols = int(ide[0][1:])
+            tds = all_attempts[0].find_all("td")
+            # Extract 'c\d' from columns
+            cols = []
+            for td in tds:
+                for _class in td["class"]:
+                    _tmp = re.search(r"c(\d)", _class)
+                    if _tmp is not None:
+                        cols.append(_tmp.groups()[0])
             # Если всего 2 колонки - то это status и урл
-            # Если всего 4 колонки - то это статус, балл, оценка и урл
+            # Если всего 4 колонки - то это id, статус, оценка и урл
+            # Если всего 5 колонок - то это id, status, score, mark, url
             for tag in all_attempts:
                 score, mark = None, None
-                order_num = tag.find("td", {"class": "c0"}).text
-                status = tag.find("td", {"class": f"c1"}).text
-                _fail_safe = tag.find("td", {"class": f"c{total_cols}"}).a
+                order_num = tag.find("td", {"class": f"c{cols[0]}"}).text
+                status = tag.find("td", {"class": f"c{cols[1]}"}).text
+                _fail_safe = tag.find("td", {"class": f"c{cols[-1]}"}).a
                 if _fail_safe is None:
                     attempt_url = None
                 else:
-                    attempt_url = tag.find("td", {"class": f"c{total_cols}"}).a["href"]
+                    attempt_url = _fail_safe["href"]
                 attempt_id = parse_qs(urlparse(attempt_url).query).get(
                     "attempt", [None]
                 )[0]
-                if total_cols == 4:
-                    score = tag.find("td", {"class": f"c2"}).text.replace(",", ".")
-                    mark = tag.find("td", {"class": f"c3"}).text.replace(",", ".")
+                if len(cols) == 5:
+                    score_pos, mark_pos = 2, 3
+                elif len(cols) == 4:
+                    score_pos, mark_pos = None, 2
+                elif len(cols) == 3:
+                    # Не закончили попытку
+                    score_pos, mark_pos = None, None
+                elif len(cols) == 2:
+                    score_pos, mark_pos = None, None
+                else:
+                    raise ValueError("Error processing table")
+                if score_pos:
+                    score = tag.find("td", {"class": f"c{score_pos}"}).text.replace(
+                        ",", "."
+                    )
+                if mark_pos:
+                    mark = tag.find("td", {"class": f"c{mark_pos}"}).text.replace(
+                        ",", "."
+                    )
+
                 rv.append(
                     TaskAttempt(
                         number=order_num,
