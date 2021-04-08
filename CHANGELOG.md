@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.3 (2021-04-08)
+### Fix
+* **pageparser:** Failure in page parsing for summaries without score (mark-only) ([`8547045`](https://github.com/alekseik1/moodle-breaker/commit/85470456a1f63b93f234cf107195a3dc74d18089))
+
 ## v2.0.2 (2021-04-04)
 ### Fix
 * **vk:** Broken `login declined` message ([`2f9369c`](https://github.com/alekseik1/moodle-breaker/commit/2f9369c7c89ed2136abc69289eb88dfe78f49643))
