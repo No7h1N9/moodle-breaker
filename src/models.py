@@ -1,10 +1,10 @@
 from contextlib import contextmanager
 
-from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy import Column, ForeignKey, Integer, String, Text, create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, relationship
 
 Base = declarative_base()
 
@@ -15,9 +15,22 @@ class User(Base):
     login = Column(String)
     password = Column(String)
 
+    uploaded_htmls = relationship("RawHtml", back_populates="uploaded_by_user")
+
     @hybrid_property
     def empty_credentials(self):
         return (not self.login) or (not self.password)
+
+
+class RawHtml(Base):
+    __tablename__ = "raw_html"
+    id = Column(Integer, primary_key=True)
+    content = Column(Text, nullable=False, comment="HTML content")
+    origin = Column(Text, nullable=False, comment="Download URL")
+    uploaded_by_user_id = Column(
+        Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    uploaded_by_user = relationship("User", back_populates="uploaded_htmls")
 
 
 class DatabaseManager:
