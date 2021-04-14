@@ -1,7 +1,9 @@
+import enum
 from contextlib import contextmanager
 
 from loguru import logger
-from sqlalchemy import Column, ForeignKey, Integer, String, Text, create_engine
+from sqlalchemy import (Column, Enum, ForeignKey, Integer, String, Text,
+                        create_engine)
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -23,11 +25,20 @@ class User(Base):
         return (not self.login) or (not self.password)
 
 
+class HtmlType(enum.Enum):
+    summary = "summary"
+    running_attempt = "running_attempt"
+    finished_attempt = "finished_attempt"
+    all_course_tasks = "all_course_tasks"
+    all_courses = "all_courses"
+
+
 class RawHtml(Base):
     __tablename__ = "raw_html"
     id = Column(Integer, primary_key=True)
     content = Column(Text, nullable=False, comment="HTML content")
     origin = Column(Text, nullable=False, comment="Download URL")
+    type = Column(Enum(HtmlType), nullable=False)
     uploaded_by_user_id = Column(
         Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
     )
