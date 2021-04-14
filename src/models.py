@@ -1,10 +1,13 @@
+import enum
 from contextlib import contextmanager
 
-from sqlalchemy import Column, Integer, String, create_engine
+from loguru import logger
+from sqlalchemy import (Column, Enum, ForeignKey, Integer, String, Text,
+                        create_engine)
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, relationship
 
 Base = declarative_base()
 
@@ -15,9 +18,31 @@ class User(Base):
     login = Column(String)
     password = Column(String)
 
+    uploaded_htmls = relationship("RawHtml", back_populates="uploaded_by_user")
+
     @hybrid_property
     def empty_credentials(self):
         return (not self.login) or (not self.password)
+
+
+class HtmlType(enum.Enum):
+    summary = "summary"
+    running_attempt = "running_attempt"
+    finished_attempt = "finished_attempt"
+    all_course_tasks = "all_course_tasks"
+    all_courses = "all_courses"
+
+
+class RawHtml(Base):
+    __tablename__ = "raw_html"
+    id = Column(Integer, primary_key=True)
+    content = Column(Text, nullable=False, comment="HTML content")
+    origin = Column(Text, nullable=False, comment="Download URL")
+    type = Column(Enum(HtmlType), nullable=False)
+    uploaded_by_user_id = Column(
+        Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    uploaded_by_user = relationship("User", back_populates="uploaded_htmls")
 
 
 class DatabaseManager:
@@ -33,8 +58,9 @@ class DatabaseManager:
         yield s
         try:
             s.commit()
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
             s.rollback()
+            logger.error(f"Failed to execute SQL query with error {e}")
         finally:
             s.close()
 
@@ -64,3 +90,24 @@ class DatabaseManager:
             self.session.commit()
         except Exception as e:
             print(f"Failed to delete user {id} with error {e}")
+
+    def safely_upload_html(
+        self,
+        origin_url: str,
+        html_content: str,
+        html_content_type: HtmlType,
+        by_user: int = None,
+    ):
+        logger.info(f"Uploading HTML page from user={by_user} and origin={origin_url}")
+        try:
+            with self.safe_session() as session:
+                session.add(
+                    RawHtml(
+                        content=html_content,
+                        origin=origin_url,
+                        type=html_content_type,
+                        uploaded_by_user_id=by_user,
+                    )
+                )
+        except Exception as e:
+            logger.error(f"Unknown error {e}")

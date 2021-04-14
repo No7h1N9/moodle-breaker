@@ -8,6 +8,7 @@ loguru
 python-dotenv
 sqlalchemy
 psycopg2-binary
+pytest-alembic
 vk_api
 pytest
 pydantic
