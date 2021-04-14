@@ -79,3 +79,19 @@ class DatabaseManager:
             self.session.commit()
         except Exception as e:
             print(f"Failed to delete user {id} with error {e}")
+
+    def safely_upload_html(
+        self, origin_url: str, html_content: str, by_user: int = None
+    ):
+        logger.info(f"Uploading HTML page from user={by_user} and origin={origin_url}")
+        try:
+            with self.safe_session() as session:
+                session.add(
+                    RawHtml(
+                        content=html_content,
+                        origin=origin_url,
+                        uploaded_by_user_id=by_user,
+                    )
+                )
+        except Exception as e:
+            logger.error(f"Unknown error {e}")
