@@ -16,6 +16,7 @@ from moodle_api.breaker import break_task
 from moodle_api.network import MoodleAPI
 from moodle_api.parsers import parse_cmid
 from src.crash import send_crash_email
+from src.models import HtmlType
 
 load_dotenv()
 
@@ -90,6 +91,7 @@ def handle_message(event):
             # TODO: feature to change password
             send_message(user_id, MOODLE_DECLINED_LOGIN)
         broken, unbroken, crash_data = break_task(api, cmid)
+        save_crash_data_to_database(crash_data, user.id)
         if not unbroken and broken:
             for _ in range(count - 1):
                 break_task(api, cmid)
@@ -97,6 +99,39 @@ def handle_message(event):
         else:
             send_crash_email(crash_data)
             send_message(user_id, FIELDS_ARE_MISSING)
+
+
+def save_crash_data_to_database(crash_data: dict, moodle_user_id: int):
+    summary_page, created_attempt = crash_data.get("first_attempt"), crash_data.get(
+        "new_attempt"
+    )
+    if not summary_page or not created_attempt:
+        logger.warning("did not receive either summary_page or created_attempt")
+        logger.warning(
+            f"summary_page={summary_page}, created_attempt={created_attempt}"
+        )
+    # summary_page
+    try:
+        manager.safely_upload_html(
+            origin_url=summary_page[0],
+            html_content=summary_page[1].decode("utf-8"),
+            html_content_type=HtmlType.summary.value,
+            by_user=moodle_user_id,
+        )
+    except Exception as e:
+        logger.error(f"error during upload summary page: {e}")
+    # created_attempt
+    try:
+        manager.safely_upload_html(
+            origin_url=created_attempt[0],
+            html_content=created_attempt[1].decode("utf-8"),
+            html_content_type=HtmlType.finished_attempt.value,
+            by_user=moodle_user_id,
+        )
+    except Exception as e:
+        logger.error(f"error during upload created finished attempt page: {e}")
+        return
+    logger.info("Upload successful")
 
 
 def main():

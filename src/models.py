@@ -92,7 +92,11 @@ class DatabaseManager:
             print(f"Failed to delete user {id} with error {e}")
 
     def safely_upload_html(
-        self, origin_url: str, html_content: str, by_user: int = None
+        self,
+        origin_url: str,
+        html_content: str,
+        html_content_type: HtmlType,
+        by_user: int = None,
     ):
         logger.info(f"Uploading HTML page from user={by_user} and origin={origin_url}")
         try:
@@ -101,6 +105,7 @@ class DatabaseManager:
                     RawHtml(
                         content=html_content,
                         origin=origin_url,
+                        type=html_content_type,
                         uploaded_by_user_id=by_user,
                     )
                 )
