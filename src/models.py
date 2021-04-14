@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 
+from loguru import logger
 from sqlalchemy import Column, ForeignKey, Integer, String, Text, create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
@@ -46,8 +47,9 @@ class DatabaseManager:
         yield s
         try:
             s.commit()
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
             s.rollback()
+            logger.error(f"Failed to execute SQL query with error {e}")
         finally:
             s.close()
 
