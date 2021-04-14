@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.0 (2021-04-14)
+### Feature
+* MVP for database upload ([`44ae871`](https://github.com/alekseik1/moodle-breaker/commit/44ae871b9ee70966ac03b289dcff2297cc950c85))
+* **alembic:** Add column of HTML document type ([`800af5b`](https://github.com/alekseik1/moodle-breaker/commit/800af5b4c6d7fa12d4a73d34abe66d1c4eb9a0fb))
+* **page-upload:** Safe method to upload page ([`96e387e`](https://github.com/alekseik1/moodle-breaker/commit/96e387e8cd6ede7c2e4ab6f3bbd9c70b5939f420))
+* **logging:** Log errors in `safe_session` ([`5732b42`](https://github.com/alekseik1/moodle-breaker/commit/5732b421d0509edfe0482fa783f18bd76ac528a7))
+* **sqlalchemy:** Add raw HTML table ([`97043e8`](https://github.com/alekseik1/moodle-breaker/commit/97043e8bc8300623c79c3f1ad71729373cba0dd8))
+
 ## v2.0.3 (2021-04-08)
 ### Fix
 * **pageparser:** Failure in page parsing for summaries without score (mark-only) ([`8547045`](https://github.com/alekseik1/moodle-breaker/commit/85470456a1f63b93f234cf107195a3dc74d18089))
