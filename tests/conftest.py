@@ -3,6 +3,12 @@ from pathlib import Path
 import pytest
 from pytest_cases import fixture
 
+
+@pytest.fixture
+def alembic_config():
+    return {"script_location": "alembic"}
+
+
 basedir = Path(__file__).parent
 
 FIXTURE_PATH = Path(basedir / "fixtures")
